@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Recuperar Senha</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <style>
+    body {
+      background-color: #111111;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #1e1e1e;
+      padding: 25px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 380px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    input {
+      background: #2c2c2c;
+      color: white;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #005bbd;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .mensagem {
+      text-align: center;
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 6px;
+      font-size: 14px;
+      border: 1px solid transparent;
+      background: transparent;
+      display: none;
+    }
+
+    .mensagem.erro {
+      color: #ff4b4b;
+      border-color: #ff4b4b;
+    }
+
+    .mensagem.sucesso {
+      color: #2ecc71;
+      border-color: #2ecc71;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Recuperar Senha</h2>
+
+    <!-- Etapa 1 -->
+    <div id="etapa1">
+      <input type="tel" id="numero" placeholder="Digite seu número de telefone">
+      <button onclick="enviarCodigo()">Enviar Código</button>
+    </div>
+
+    <!-- Etapa 2 -->
+    <div id="etapa2" class="hidden">
+      <input type="text" id="codigo" placeholder="Digite o código recebido">
+      <button onclick="verificarCodigo()">Verificar Código</button>
+    </div>
+
+    <!-- Mensagem de erro/sucesso -->
+    <div id="mensagem" class="mensagem hidden"></div>
+
+    <!-- Recaptcha invisível -->
+    <div id="recaptcha-container"></div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCIxyvUWuPDwsUhJpajyBuZuVRmNFbbTBk",
+      authDomain: "lifeline-78bce.firebaseapp.com",
+      databaseURL: "https://lifeline-78bce-default-rtdb.firebaseio.com",
+      projectId: "lifeline-78bce",
+      storageBucket: "lifeline-78bce.appspot.com",
+      messagingSenderId: "415768649474",
+      appId: "1:415768649474:web:58256fd83b17f13fdadbd8"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const auth = firebase.auth();
+    let confirmationResult = null;
+
+    function mostrarMensagem(texto, tipo = "erro") {
+      const msg = document.getElementById("mensagem");
+      msg.textContent = texto;
+      msg.className = "mensagem " + tipo;
+      msg.classList.remove("hidden");
+      msg.style.display = "block";
+
+      setTimeout(() => {
+        msg.classList.add("hidden");
+        msg.style.display = "none";
+      }, 5000);
+    }
+
+    function enviarCodigo() {
+      const numero = document.getElementById("numero").value.trim();
+
+      if (!numero || numero.length < 10) {
+        mostrarMensagem("Digite um número de telefone válido com DDD.", "erro");
+        return;
+      }
+
+      db.ref("usuarios/" + numero).once("value")
+        .then(snapshot => {
+          if (!snapshot.exists()) {
+            mostrarMensagem("Número não cadastrado.", "erro");
+            return;
+          }
+
+          window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+            size: 'invisible'
+          });
+
+          auth.signInWithPhoneNumber(numero, window.recaptchaVerifier)
+            .then(result => {
+              confirmationResult = result;
+              localStorage.setItem("numeroRecuperacao", numero);
+              mostrarMensagem("Código enviado via SMS.", "sucesso");
+              document.getElementById("etapa1").classList.add("hidden");
+              document.getElementById("etapa2").classList.remove("hidden");
+            })
+            .catch(error => {
+              mostrarMensagem("Erro ao enviar SMS: " + error.message, "erro");
+              console.error(error);
+            });
+        })
+        .catch(error => {
+          mostrarMensagem("Erro ao verificar número: " + error.message, "erro");
+          console.error(error);
+        });
+    }
+
+    function verificarCodigo() {
+      const codigo = document.getElementById("codigo").value.trim();
+
+      if (!codigo || !confirmationResult) {
+        mostrarMensagem("Código inválido ou expirado.", "erro");
+        return;
+      }
+
+      confirmationResult.confirm(codigo)
+        .then(() => {
+          mostrarMensagem("Código verificado com sucesso!", "sucesso");
+          setTimeout(() => {
+            window.location.href = "nova-senha.html";
+          }, 1000);
+        })
+        .catch(error => {
+          mostrarMensagem("Código incorreto ou expirado.", "erro");
+          console.error(error);
+        });
+    }
+  </script>
+</body>
+</html>

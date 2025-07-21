@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Criar Grupo - LIFELINE</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding-bottom: 100px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #111;
+      padding: 14px 16px;
+      border-bottom: 1px solid #222;
+    }
+
+    .header i {
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .header h2 {
+      font-size: 18px;
+    }
+
+    .search-box {
+      margin: 14px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background: #222;
+      color: white;
+      font-size: 15px;
+    }
+
+    .section {
+      padding: 0 14px;
+    }
+
+    .section-title {
+      margin: 14px 0 8px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #00aaff;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #222;
+    }
+
+    .contact-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .contact-item img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+    }
+
+    .contact-info strong {
+      display: block;
+      font-size: 15px;
+    }
+
+    .contact-info span {
+      font-size: 12px;
+      color: #ccc;
+    }
+
+    .contact-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #00aaff;
+    }
+
+    .btn-finalizar {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(to right, #00bfff, #005f99);
+      color: white;
+      border: none;
+      padding: 14px 30px;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      cursor: pointer;
+    }
+
+    .hidden { display: none; }
+
+    .step2 {
+      padding: 20px 16px;
+    }
+
+    .step2 input[type="text"],
+    .step2 textarea {
+      width: 100%;
+      background: #111;
+      color: white;
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      font-size: 15px;
+    }
+
+    .step2 label {
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    .members-list {
+      margin-top: 10px;
+    }
+
+    .member {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #222;
+      padding: 8px 0;
+    }
+
+    .member span {
+      font-size: 14px;
+    }
+
+    .member select {
+      background: #222;
+      color: white;
+      border: none;
+      padding: 6px;
+      border-radius: 6px;
+    }
+
+    .photo-upload {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .photo-upload img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #00aaff;
+    }
+
+    .photo-upload input {
+      display: none;
+    }
+
+    .photo-upload label {
+      background: #00aaff;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ETAPA 1 -->
+<div id="step1">
+  <div class="header">
+    <i class="material-icons" onclick="location.href='mensagem.html'">arrow_back</i>
+    <h2>Criar Grupo</h2>
+    <i class="material-icons">group_add</i>
+  </div>
+
+  <div class="search-box">
+    <input type="text" placeholder="Pesquisar contatos..." id="pesquisa" oninput="filtrarContatos()">
+  </div>
+
+  <div class="section">
+    <div class="section-title">Contatos</div>
+    <div id="listaContatos">
+      <!-- Lista gerada via JS -->
+    </div>
+  </div>
+
+  <button class="btn-finalizar" onclick="proximaEtapa()">Criar Grupo</button>
+</div>
+
+<!-- ETAPA 2 -->
+<div id="step2" class="hidden">
+  <div class="header">
+    <i class="material-icons" onclick="voltarEtapa()">arrow_back</i>
+    <h2>Detalhes do Grupo</h2>
+    <div></div>
+  </div>
+
+  <div class="step2">
+    <div class="photo-upload">
+      <img src="https://via.placeholder.com/60" id="groupPhoto">
+      <label for="foto">Alterar Foto</label>
+      <input type="file" id="foto" onchange="trocarFoto(event)">
+    </div>
+
+    <label>Nome do Grupo</label>
+    <input type="text" id="nomeGrupo" placeholder="Digite o nome do grupo">
+
+    <label>Regras do Grupo</label>
+    <textarea id="regrasGrupo" rows="4" placeholder="Digite as regras..."></textarea>
+
+    <label>Membros e cargos</label>
+    <div class="members-list" id="membersList"></div>
+
+    <button class="btn-finalizar" onclick="concluirGrupo()">Concluir</button>
+  </div>
+</div>
+
+<script>
+  const contatos = [
+    { nome: "João Pedro", status: "Online", img: "https://via.placeholder.com/44" },
+    { nome: "Ana Silva", status: "Visto há 2h", img: "https://via.placeholder.com/44" },
+    { nome: "Marcos L.", status: "Online", img: "https://via.placeholder.com/44" },
+  ];
+
+  let selecionados = [];
+
+  function carregarContatos(lista = contatos) {
+    const container = document.getElementById("listaContatos");
+    container.innerHTML = "";
+    lista.forEach(c => {
+      container.innerHTML += `
+        <div class="contact-item">
+          <div class="contact-left">
+            <img src="${c.img}" alt="perfil">
+            <div class="contact-info">
+              <strong>${c.nome}</strong>
+              <span>${c.status}</span>
+            </div>
+          </div>
+          <input type="checkbox" class="checkbox" value="${c.nome}">
+        </div>`;
+    });
+  }
+
+  function filtrarContatos() {
+    const filtro = document.getElementById("pesquisa").value.toLowerCase();
+    const filtrados = contatos.filter(c => c.nome.toLowerCase().includes(filtro));
+    carregarContatos(filtrados);
+  }
+
+  function proximaEtapa() {
+    const checkboxes = document.querySelectorAll('.checkbox:checked');
+    if (checkboxes.length === 0) return;
+    selecionados = [];
+    checkboxes.forEach(cb => selecionados.push(cb.value));
+    const membersList = document.getElementById("membersList");
+    membersList.innerHTML = "";
+    selecionados.forEach(nome => {
+      membersList.innerHTML += `
+        <div class="member">
+          <span>${nome}</span>
+          <select>
+            <option>Participante</option>
+            <option>Administrador</option>
+          </select>
+        </div>`;
+    });
+    document.getElementById("step1").classList.add("hidden");
+    document.getElementById("step2").classList.remove("hidden");
+  }
+
+  function voltarEtapa() {
+    document.getElementById("step2").classList.add("hidden");
+    document.getElementById("step1").classList.remove("hidden");
+  }
+
+  function trocarFoto(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      document.getElementById("groupPhoto").src = url;
+    }
+  }
+
+  function concluirGrupo() {
+    const nome = document.getElementById("nomeGrupo").value;
+    const regras = document.getElementById("regrasGrupo").value;
+    const membros = [];
+    document.querySelectorAll(".member").forEach(m => {
+      const nome = m.querySelector("span").textContent;
+      const cargo = m.querySelector("select").value;
+      membros.push({ nome, cargo });
+    });
+    const grupo = {
+      nome,
+      regras,
+      membros,
+      foto: document.getElementById("groupPhoto").src
+    };
+    localStorage.setItem("grupo_ativo", JSON.stringify(grupo));
+    location.href = "chatgrupo.html";
+  }
+
+  carregarContatos();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Selecionar Idioma</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: #111;
+      border-bottom: 1px solid #222;
+    }
+
+    header h1 {
+      font-size: 18px;
+    }
+
+    .material-icons { cursor: pointer; }
+
+    .container {
+      padding: 20px;
+    }
+
+    .idioma {
+      background: #111;
+      padding: 14px;
+      margin-bottom: 10px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    .idioma:hover {
+      background: #1e1e1e;
+    }
+
+    .idioma.selecionado {
+      border-left: 4px solid #1e90ff;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div onclick="history.back()"><i class="material-icons">arrow_back</i></div>
+  <h1>Selecionar Idioma</h1>
+  <div></div>
+</header>
+
+<div class="container" id="listaIdiomas">
+  <!-- Lista de idiomas vai aqui -->
+</div>
+
+<script>
+  const idiomasDisponiveis = [
+    { code: "pt", nome: "Português" },
+    { code: "en", nome: "English" },
+    { code: "fr", nome: "Français" },
+    { code: "es", nome: "Español" },
+    { code: "de", nome: "Deutsch" },
+    { code: "it", nome: "Italiano" },
+    { code: "ar", nome: "العربية" },
+    { code: "hi", nome: "हिन्दी" },
+    { code: "zh", nome: "中文 (简体)" },
+    { code: "ja", nome: "日本語" },
+    { code: "ru", nome: "Русский" },
+    { code: "sw", nome: "Kiswahili" },
+    { code: "yo", nome: "Yorùbá" },
+    { code: "ig", nome: "Igbo" },
+    { code: "xh", nome: "IsiXhosa" },
+    { code: "zu", nome: "IsiZulu" },
+    { code: "ht", nome: "Kreyòl Ayisyen" },
+    { code: "fil", nome: "Filipino" },
+    { code: "tr", nome: "Türkçe" },
+    { code: "ko", nome: "한국어" },
+    { code: "vi", nome: "Tiếng Việt" }
+  ];
+
+  const langAtual = localStorage.getItem("lang") || "pt";
+  const lista = document.getElementById("listaIdiomas");
+
+  idiomasDisponiveis.forEach(idioma => {
+    const div = document.createElement("div");
+    div.className = "idioma";
+    if (idioma.code === langAtual) div.classList.add("selecionado");
+    div.innerText = idioma.nome;
+    div.onclick = () => selecionarIdioma(idioma.code);
+    lista.appendChild(div);
+  });
+
+  function selecionarIdioma(codigo) {
+    localStorage.setItem("lang", codigo);
+    alert("Idioma atualizado para: " + codigo.toUpperCase());
+    location.href = "feed.html";
+  }
+</script>
+
+</body>
+</html>

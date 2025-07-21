@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bloquear Usuário</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      border-bottom: 1px solid #333;
+      background-color: #111;
+    }
+
+    .back-button {
+      font-size: 24px;
+      margin-right: 12px;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .usuario-alvo {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .usuario-alvo img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin-bottom: 8px;
+    }
+
+    .motivos label {
+      display: block;
+      margin-bottom: 12px;
+      background-color: #222;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    textarea {
+      width: 100%;
+      margin-top: 16px;
+      padding: 10px;
+      border-radius: 8px;
+      background-color: #222;
+      color: #fff;
+      border: none;
+      resize: vertical;
+    }
+
+    .bloquear-btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 12px;
+      margin-top: 24px;
+      width: 100%;
+      font-size: 16px;
+      border-radius: 30px;
+      cursor: pointer;
+    }
+
+    /* Notificação flutuante */
+    .toast {
+      position: fixed;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #1e1e1e;
+      color: #00ccff;
+      padding: 10px 20px;
+      border-radius: 24px;
+      font-size: 15px;
+      display: none;
+      z-index: 2000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">Usuário bloqueado com sucesso.</div>
+
+  <!-- Cabeçalho -->
+  <header>
+    <div class="back-button" onclick="voltar()">←</div>
+    <div class="title">Bloquear usuário</div>
+  </header>
+
+  <div class="container">
+    <!-- Usuário Alvo -->
+    <div class="usuario-alvo">
+      <img src="https://via.placeholder.com/80" alt="Foto do usuário">
+      <div><strong>João Silva</strong></div>
+    </div>
+
+    <!-- Motivos -->
+    <div class="motivos">
+      <label><input type="radio" name="motivo" value="Conteúdo ofensivo"> Conteúdo ofensivo</label>
+      <label><input type="radio" name="motivo" value="Assédio ou bullying"> Assédio ou bullying</label>
+      <label><input type="radio" name="motivo" value="Spam ou mensagens indesejadas"> Spam ou mensagens indesejadas</label>
+      <label><input type="radio" name="motivo" value="Outro"> Outro</label>
+    </div>
+
+    <!-- Campo extra -->
+    <textarea rows="3" placeholder="Descreva o motivo (opcional)..."></textarea>
+
+    <!-- Botão -->
+    <button class="bloquear-btn" onclick="bloquearUsuario()">Bloquear</button>
+  </div>
+
+  <script>
+    function voltar() {
+      window.history.back(); // Ou substitua por o nome da página de origem
+    }
+
+    function bloquearUsuario() {
+      const motivo = document.querySelector('input[name="motivo"]:checked');
+      if (!motivo) {
+        mostrarToast("Selecione um motivo para bloquear.");
+        return;
+      }
+
+      mostrarToast("Usuário bloqueado com sucesso.");
+      setTimeout(() => {
+        window.location.href = "usuariosbloqueados.html"; // redireciona para a página de bloqueados
+      }, 1800);
+    }
+
+    function mostrarToast(mensagem) {
+      const toast = document.getElementById("toast");
+      toast.textContent = mensagem;
+      toast.style.display = "block";
+      setTimeout(() => {
+        toast.style.display = "none";
+      }, 2500);
+    }
+  </script>
+
+</body>
+</html>

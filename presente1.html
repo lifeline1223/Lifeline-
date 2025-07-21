@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Resgatar Presente</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 16px;
+    }
+
+    header h1 {
+      font-size: 18px;
+    }
+
+    .material-icons {
+      cursor: pointer;
+      color: #1e90ff;
+    }
+
+    .resumo {
+      margin-bottom: 25px;
+      font-size: 15px;
+      color: #ccc;
+    }
+
+    label {
+      display: block;
+      margin-top: 18px;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: none;
+      background: #1a1a1a;
+      color: #fff;
+    }
+
+    .valor-total {
+      margin-top: 20px;
+      font-size: 16px;
+      color: #1e90ff;
+    }
+
+    button {
+      margin-top: 30px;
+      width: 100%;
+      background: #1e90ff;
+      color: white;
+      padding: 14px;
+      font-size: 15px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #007bff;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div onclick="history.back()"><i class="material-icons">arrow_back</i></div>
+  <h1>Resgatar Presente</h1>
+  <div></div>
+</header>
+
+<div class="resumo">
+  Você tem <strong id="presentesDisponiveis">5</strong> presentes disponíveis para resgate.
+</div>
+
+<label for="qtd">Quantidade de presentes</label>
+<input type="number" id="qtd" min="1" max="5" placeholder="Ex: 2" oninput="calcularTotal()">
+
+<label for="tipo">Converter para</label>
+<select id="tipo" onchange="calcularTotal()">
+  <option value="lin">Moeda Virtual (LIN)</option>
+  <option value="euro">Euro (€)</option>
+</select>
+
+<div class="valor-total" id="totalValor">Total: -</div>
+
+<button onclick="confirmarResgate()">Confirmar Resgate</button>
+
+<script>
+  const VALOR_EURO_POR_PRESENTE = 0.50; // cada presente vale 0,50€
+  const VALOR_LIN_POR_PRESENTE = 10;    // ou 10 LIN
+
+  let totalPresentes = 5;
+
+  function calcularTotal() {
+    const qtd = parseInt(document.getElementById('qtd').value);
+    const tipo = document.getElementById('tipo').value;
+    const totalEl = document.getElementById('totalValor');
+
+    if (!qtd || qtd < 1 || qtd > totalPresentes) {
+      totalEl.innerText = 'Total: -';
+      return;
+    }
+
+    if (tipo === 'euro') {
+      const total = qtd * VALOR_EURO_POR_PRESENTE;
+      totalEl.innerText = `Total: €${total.toFixed(2)}`;
+    } else {
+      const total = qtd * VALOR_LIN_POR_PRESENTE;
+      totalEl.innerText = `Total: ${total} LIN`;
+    }
+  }
+
+  function confirmarResgate() {
+    const qtd = parseInt(document.getElementById('qtd').value);
+    const tipo = document.getElementById('tipo').value;
+
+    if (!qtd || qtd < 1 || qtd > totalPresentes) {
+      alert("Por favor, insira uma quantidade válida de presentes.");
+      return;
+    }
+
+    let valor = 0;
+    if (tipo === 'euro') {
+      valor = qtd * VALOR_EURO_POR_PRESENTE;
+      // Salvar no localStorage como valor em euro
+      let saldo = parseFloat(localStorage.getItem("saldoEuro") || "0");
+      saldo += valor;
+      localStorage.setItem("saldoEuro", saldo.toFixed(2));
+    } else {
+      valor = qtd * VALOR_LIN_POR_PRESENTE;
+      let saldoLin = parseInt(localStorage.getItem("saldoLin") || "0");
+      saldoLin += valor;
+      localStorage.setItem("saldoLin", saldoLin);
+    }
+
+    alert("Presente resgatado com sucesso!");
+    window.location.href = "conta.html";
+  }
+
+  // Atualiza quantidade de presentes disponíveis
+  document.getElementById("presentesDisponiveis").innerText = totalPresentes;
+</script>
+
+</body>
+</html>

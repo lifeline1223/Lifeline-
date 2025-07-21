@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Conferência</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px;
+      background-color: #111;
+    }
+
+    .creator-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      background: #666;
+      border-radius: 50%;
+    }
+
+    .end-btn {
+      background: red;
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .audience-highlights {
+      display: flex;
+      gap: 8px;
+      padding: 8px;
+      overflow-x: auto;
+      background: #111;
+      align-items: center;
+    }
+
+    .audience-item {
+      min-width: 60px;
+      background: #1a1a1a;
+      padding: 5px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 11px;
+    }
+
+    .audience-item .pic {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: gray;
+      margin: auto;
+    }
+
+    .theme-title {
+      text-align: center;
+      font-size: 14px;
+      background: #111;
+      padding: 6px 0;
+    }
+
+    .multi-host-view {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(45%, 1fr));
+      gap: 10px;
+      padding: 10px;
+      height: 62%;
+    }
+
+    .host-box {
+      background: #222;
+      border-radius: 10px;
+      position: relative;
+      padding: 5px;
+    }
+
+    .host-name {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      font-size: 13px;
+      background: rgba(0,0,0,0.4);
+      padding: 2px 6px;
+      border-radius: 5px;
+    }
+
+    .floating-icons {
+      position: absolute;
+      bottom: 70px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .floating-icons i {
+      font-size: 26px;
+      background: rgba(255,255,255,0.1);
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .floating-icons i.active {
+      background: red;
+    }
+
+    .footer {
+      background: #111;
+      padding: 5px 10px;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer .title {
+      font-weight: bold;
+    }
+
+    .footer button {
+      padding: 4px 10px;
+      font-size: 13px;
+      background: #00aaff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 170, 255, 0.9);
+      color: white;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-size: 13px;
+      display: none;
+      z-index: 999;
+      animation: fadeInOut 3s ease forwards;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      90% { opacity: 1; }
+      100% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="creator-info">
+      <div class="avatar"></div>
+      <span id="nomeUsuario">Usuário</span>
+    </div>
+    <button class="end-btn" onclick="encerrar()">Encerrar</button>
+  </div>
+
+  <div class="audience-highlights" id="barraPublico">
+    <!-- preenchido via JS -->
+  </div>
+
+  <div class="theme-title">
+    Tema da Conferência: <strong>Como crescer na LIFELINE</strong>
+  </div>
+
+  <div class="multi-host-view" id="caixasConferencia">
+    <!-- Participantes simulados -->
+    <div class="host-box"><div class="host-name">João Salvador</div></div>
+    <div class="host-box"><div class="host-name">Maria Lopes</div></div>
+    <div class="host-box"><div class="host-name">Carlos Tavares</div></div>
+  </div>
+
+  <div class="floating-icons">
+    <i class="material-icons" id="micBtn" onclick="toggleMic(this)">mic</i>
+    <i class="material-icons" onclick="trocarCamera()">flip_camera_android</i>
+    <i class="material-icons" onclick="receberPresente()">card_giftcard</i>
+    <i class="material-icons" onclick="window.location.href='partilhar.html'">person_add</i>
+  </div>
+
+  <div class="footer">
+    <span class="title">Transmissão ao vivo</span>
+    <button onclick="copiar()">Copiar Link</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    function encerrar() {
+      window.location.href = "criar_conferencia.html";
+    }
+
+    function copiar() {
+      mostrarToast("Link copiado para a área de transferência");
+    }
+
+    function receberPresente() {
+      mostrarToast("Presente recebido!");
+      window.location.href = "presente.html";
+    }
+
+    function toggleMic(btn) {
+      btn.classList.toggle("active");
+      mostrarToast(btn.classList.contains("active") ? "Microfone desligado" : "Microfone ligado");
+    }
+
+    function trocarCamera() {
+      mostrarToast("Câmera alternada");
+    }
+
+    function mostrarToast(texto) {
+      const toast = document.getElementById("toast");
+      toast.innerText = texto;
+      toast.style.display = "block";
+      setTimeout(() => {
+        toast.style.display = "none";
+      }, 3000);
+    }
+
+    window.onload = () => {
+      const nome = localStorage.getItem("usuarioAtual") || "Participante";
+      const tipo = localStorage.getItem("tipoConferencia") || "publica";
+
+      document.getElementById("nomeUsuario").innerText = nome;
+
+      const barra = document.getElementById("barraPublico");
+      if (tipo === "publica") {
+        barra.innerHTML = `
+          <div class="audience-item"><div class="pic"></div><span>Ana</span></div>
+          <div class="audience-item"><div class="pic"></div><span>Luís</span></div>
+          <div class="audience-item"><div class="pic"></div><span>Paulo</span></div>
+          <div class="audience-item"><div class="pic"></div><span>Marta</span></div>
+          <div class="audience-item"><div class="pic"></div><span>Jorge</span></div>
+        `;
+      } else {
+        barra.innerHTML = `<button onclick="window.location.href='partilhar.html'" style="background:#00aaff; color:white; border:none; padding:6px 12px; border-radius:6px;">Convidar pessoa</button>`;
+      }
+    };
+  </script>
+
+</body>
+</html>

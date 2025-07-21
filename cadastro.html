@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cadastro - LIFELINE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0f0f0f;
+      color: #ffffff;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 380px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #ffffff;
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .mensagem {
+      padding: 12px;
+      border-radius: 8px;
+      background-color: #1a1a1a;
+      color: #ff4c4c;
+      border: 1px solid #ff4c4c;
+      font-size: 14px;
+      display: none;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 14px;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 16px;
+    }
+
+    input::placeholder {
+      color: #888;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #1877f2;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #145dbe;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Criar Conta no LIFELINE</h2>
+
+    <div class="mensagem" id="mensagemErro"></div>
+
+    <select id="ddi">
+      <option value="+244">🇦🇴 Angola (+244)</option>
+      <option value="+55">🇧🇷 Brasil (+55)</option>
+      <option value="+351">🇵🇹 Portugal (+351)</option>
+      <option value="+1">🇺🇸 EUA / 🇨🇦 Canadá (+1)</option>
+    </select>
+
+    <input type="tel" id="telefone" placeholder="Número de telefone" required />
+    <input type="text" id="nome" placeholder="Nome completo" required />
+    <input type="date" id="nascimento" required />
+
+    <button onclick="avancar()">Avançar</button>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCIxyvUWuPDwsUhJpajyBuZuVRmNFbbTBk",
+      authDomain: "lifeline-78bce.firebaseapp.com",
+      databaseURL: "https://lifeline-78bce-default-rtdb.firebaseio.com",
+      projectId: "lifeline-78bce",
+      storageBucket: "lifeline-78bce.appspot.com",
+      messagingSenderId: "283037373040",
+      appId: "1:283037373040:web:ba60a4d69c09be36a6dab5"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    function mostrarErro(msg) {
+      const div = document.getElementById("mensagemErro");
+      div.innerText = msg;
+      div.style.display = "block";
+    }
+
+    function calcularIdade(dataNasc) {
+      const hoje = new Date();
+      const nascimento = new Date(dataNasc);
+      let idade = hoje.getFullYear() - nascimento.getFullYear();
+      const m = hoje.getMonth() - nascimento.getMonth();
+      if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) {
+        idade--;
+      }
+      return idade;
+    }
+
+    function avancar() {
+      const ddi = document.getElementById("ddi").value;
+      const telefone = document.getElementById("telefone").value.trim();
+      const nome = document.getElementById("nome").value.trim();
+      const nascimento = document.getElementById("nascimento").value;
+      const alerta = document.getElementById("mensagemErro");
+
+      alerta.style.display = "none";
+
+      if (!telefone || !nome || !nascimento) {
+        mostrarErro("Preencha todos os campos.");
+        return;
+      }
+
+      const idade = calcularIdade(nascimento);
+      if (idade < 18) {
+        mostrarErro("⚠️ Você deve ter pelo menos 18 anos para se cadastrar.");
+        return;
+      }
+
+      const telefoneCompleto = ddi + telefone;
+      const dados = {
+        telefone: telefoneCompleto,
+        nome,
+        nascimento,
+        status: "incompleto"
+      };
+
+      firebase.database().ref("usuarios/" + telefoneCompleto).set(dados)
+        .then(() => {
+          localStorage.setItem("kuntaCadastroParcial", JSON.stringify(dados));
+          window.location.href = "completar.html?telefone=" + encodeURIComponent(telefoneCompleto);
+        })
+        .catch(() => {
+          mostrarErro("Erro ao salvar os dados. Tente novamente.");
+        });
+    }
+  </script>
+
+</body>
+</html>

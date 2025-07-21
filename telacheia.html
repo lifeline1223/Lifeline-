@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Conteúdo em Tela Cheia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    /* [CSS IGUAL AO SEU, SEM ALTERAÇÕES] ** {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  color: white;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+}
+
+header i {
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.user-name {
+  font-size: 16px;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.full-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+video, img, .text-content {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.text-content {
+  padding: 40px;
+  font-size: 20px;
+  text-align: center;
+}
+
+.side-actions {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 101;
+  text-align: center;
+}
+
+.side-actions i {
+  font-size: 30px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.side-actions i:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.side-actions i.vermelho {
+  color: red;
+}
+
+.side-actions span {
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.descricao {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  font-size: 14px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 8px 12px;
+  border-radius: 10px;
+  max-width: 70%;
+  z-index: 101;
+}
+
+.icone-musica {
+  position: absolute;
+  bottom: 20px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 6px 10px;
+  border-radius: 10px;
+}
+
+.icone-musica i {
+  font-size: 20px;
+  color: #00f0ff;
+}
+
+/* === Modal Comentários (Dropdown) === */
+#comentariosModal {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  max-height: 50%;
+  background: rgba(30, 30, 30, 0.98);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  z-index: 200;
+  flex-direction: column;
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+#listaComentarios {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.comentario-item {
+  background: #1e1e1e;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.comentario-item .acoes {
+  margin-top: 6px;
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  color: #aaa;
+}
+
+.comentario-item .acoes i {
+  cursor: pointer;
+}
+
+.comentario-item .reacoes {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.comentario-item .reacoes i {
+  font-size: 18px;
+  color: #ff5e5e;
+  cursor: pointer;
+}
+
+.input-comentario {
+  padding: 12px;
+  border-top: 1px solid #444;
+  display: flex;
+  background: #2a2a2a;
+}
+
+.input-comentario input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background: #444;
+  color: white;
+}
+
+.input-comentario input::placeholder {
+  color: #bbb;
+}
+
+.input-comentario button {
+  margin-left: 10px;
+  padding: 10px 16px;
+  background: #00f0ff;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.input-comentario button:hover {
+  background: #00cce0;
+}
+
+/* Respostas visuais */
+.comentario-item .resposta {
+  margin-top: 8px;
+  padding-left: 10px;
+  border-left: 2px solid #555;
+  font-size: 14px;
+  color: #ccc;
+}/
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%;
+      background: #000; color: white;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    header {
+      position: absolute; top: 0; left: 0; width: 100%;
+      display: flex; align-items: center;
+      padding: 12px; background: rgba(0,0,0,0.5);
+      z-index: 100;
+    }
+
+    header i { font-size: 28px; cursor: pointer; }
+    .user-name { font-size: 16px; font-weight: bold; margin-left: 10px; }
+
+    .full-content {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    video, img, .text-content {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+
+    .text-content {
+      padding: 40px; font-size: 20px; text-align: center;
+    }
+
+    .side-actions {
+      position: absolute;
+      top: 50%; right: 10px;
+      transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 20px;
+      z-index: 101; text-align: center;
+    }
+
+    .side-actions i {
+      font-size: 30px;
+      background: rgba(255,255,255,0.1);
+      padding: 10px; border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .side-actions i.vermelho { color: red; }
+
+    .side-actions span {
+      font-size: 14px; margin-top: 4px;
+    }
+
+    .descricao {
+      position: absolute; bottom: 20px; left: 20px;
+      font-size: 14px; background: rgba(0,0,0,0.5);
+      padding: 8px 12px; border-radius: 10px;
+      max-width: 70%; z-index: 101;
+    }
+
+    .icone-musica {
+      position: absolute; bottom: 20px; right: 10px;
+      display: flex; align-items: center; gap: 5px;
+      font-size: 14px; background: rgba(0,0,0,0.5);
+      padding: 6px 10px; border-radius: 10px;
+    }
+
+    .icone-musica i { font-size: 20px; color: #00f0ff; }
+
+    #comentariosModal {
+      display: none; position: fixed;
+      bottom: 0; left: 0;
+      width: 100%; max-height: 50%;
+      background: rgba(30, 30, 30, 0.98);
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      z-index: 200; flex-direction: column;
+      animation: slideUp 0.3s ease-out forwards;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    #listaComentarios {
+      flex: 1; overflow-y: auto; padding: 16px;
+    }
+
+    .comentario-item {
+      background: #1e1e1e;
+      padding: 10px; border-radius: 8px;
+      margin-bottom: 12px; position: relative;
+    }
+
+    .comentario-item .acoes {
+      margin-top: 6px; display: flex;
+      gap: 10px; font-size: 13px; color: #aaa;
+    }
+
+    .comentario-item .acoes i { cursor: pointer; }
+
+    .comentario-item .reacoes {
+      position: absolute; right: 10px; top: 10px;
+    }
+
+    .input-comentario {
+      padding: 12px; border-top: 1px solid #444;
+      display: flex; background: #2a2a2a;
+    }
+
+    .input-comentario input {
+      flex: 1; padding: 10px;
+      border: none; border-radius: 5px;
+      background: #444; color: white;
+    }
+
+    .input-comentario button {
+      margin-left: 10px;
+      padding: 10px 16px;
+      background: #00f0ff; color: black;
+      border: none; border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+</head>
+
+<body>
+  <header>
+    <i class="material-icons" onclick="voltar()">arrow_back</i>
+    <span class="user-name" id="userName">Usuário</span>
+  </header>
+
+  <div class="full-content" id="conteudo">
+    <video id="media" autoplay loop muted controls></video>
+  </div>
+
+  <div class="side-actions">
+    <div>
+      <i class="material-icons" id="btnLike" onclick="curtirConteudo()">favorite</i>
+      <span id="likeCount">0</span>
+    </div>
+    <div>
+      <i class="material-icons" onclick="abrirComentarios()">comment</i>
+      <span id="commentCount">0</span>
+    </div>
+    <div>
+      <i class="material-icons" onclick="compartilhar()">share</i>
+    </div>
+  </div>
+
+  <div class="descricao" id="descricao">Descrição do conteúdo</div>
+  <div class="icone-musica"><i class="material-icons">music_note</i> Música: Beat Afro 2025</div>
+
+  <div id="comentariosModal">
+    <div id="listaComentarios"></div>
+    <div class="input-comentario">
+      <input type="text" id="novoComentario" placeholder="Escreva um comentário...">
+      <button onclick="enviarComentario()">Enviar</button>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      databaseURL: "https://lifeline-78bce-default-rtdb.firebaseio.com/"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const conteudoId = urlParams.get("id");
+
+    const media = document.getElementById("media");
+    const userName = document.getElementById("userName");
+    const descricaoDiv = document.getElementById("descricao");
+    const likeIcon = document.getElementById("btnLike");
+    const likeCount = document.getElementById("likeCount");
+    const commentCount = document.getElementById("commentCount");
+    let jaCurtiu = false;
+
+    function voltar() {
+      window.location.href = "usuario.html";
+    }
+
+    function curtirConteudo() {
+      if (jaCurtiu) return;
+      const likeRef = db.ref(`conteudos/${conteudoId}/likes`);
+      likeRef.transaction(curr => (curr || 0) + 1);
+      jaCurtiu = true;
+      likeIcon.classList.add("vermelho");
+    }
+
+    function compartilhar() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'Conteúdo',
+          url: window.location.href
+        }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+          alert("Link copiado!");
+        });
+      }
+    }
+
+    function abrirComentarios() {
+      document.getElementById("comentariosModal").style.display = "flex";
+      carregarComentarios();
+    }
+
+    function carregarConteudo() {
+      const ref = db.ref("conteudos/" + conteudoId);
+      ref.on("value", snapshot => {
+        const data = snapshot.val();
+        if (!data) return;
+
+        userName.textContent = data.usuario || "Usuário";
+        descricaoDiv.textContent = data.descricao || "";
+        likeCount.textContent = data.likes || 0;
+        commentCount.textContent = data.comentarios ? Object.keys(data.comentarios).length : 0;
+
+        if (data.tipo === "imagem") {
+          media.outerHTML = `<img src="${data.url}" alt="imagem">`;
+        } else if (data.tipo === "texto") {
+          media.outerHTML = `<div class="text-content">${data.texto}</div>`;
+        } else {
+          media.src = data.url;
+          media.type = "video/mp4";
+        }
+      });
+    }
+
+    function enviarComentario() {
+      const texto = document.getElementById("novoComentario").value.trim();
+      if (!texto) return;
+
+      const comentarioRef = db.ref(`conteudos/${conteudoId}/comentarios`).push();
+      comentarioRef.set({
+        texto,
+        curtidas: 0,
+        usuario: "Anônimo",
+        respostas: {}
+      });
+
+      document.getElementById("novoComentario").value = "";
+      carregarComentarios();
+    }
+
+    function carregarComentarios() {
+      const lista = document.getElementById("listaComentarios");
+      lista.innerHTML = "";
+
+      db.ref(`conteudos/${conteudoId}/comentarios`).once("value", snap => {
+        lista.innerHTML = "";
+        snap.forEach(child => {
+          const comentario = child.val();
+          const chave = child.key;
+
+          const div = document.createElement("div");
+          div.className = "comentario-item";
+
+          div.innerHTML = `
+            <div>${comentario.texto}</div>
+            <div class="acoes">
+              <i class="material-icons" onclick="responderComentario('${chave}')">reply</i>
+              <i class="material-icons" onclick="editarComentario('${chave}', '${comentario.texto.replace(/'/g, "\\'")}')">edit</i>
+            </div>
+            <div class="reacoes">
+              <i class="material-icons" onclick="curtirComentario('${chave}', this)">favorite</i>
+              <span>${comentario.curtidas || 0}</span>
+            </div>
+            <div id="respostas-${chave}"></div>
+          `;
+
+          lista.appendChild(div);
+
+          if (comentario.respostas) {
+            for (const rKey in comentario.respostas) {
+              const resposta = comentario.respostas[rKey];
+              const rDiv = document.createElement("div");
+              rDiv.style.marginTop = "6px";
+              rDiv.style.paddingLeft = "10px";
+              rDiv.style.borderLeft = "1px solid #555";
+              rDiv.innerHTML = `<div style="font-size: 14px; color: #ccc;">↪ ${resposta.texto}</div>`;
+              document.getElementById(`respostas-${chave}`).appendChild(rDiv);
+            }
+          }
+        });
+      });
+    }
+
+    function curtirComentario(id, el) {
+      const span = el.nextElementSibling;
+      let atual = parseInt(span.textContent);
+      span.textContent = atual + 1;
+      const ref = db.ref(`conteudos/${conteudoId}/comentarios/${id}/curtidas`);
+      ref.transaction(val => (val || 0) + 1);
+    }
+
+    function editarComentario(id, textoAtual) {
+      const novo = prompt("Editar comentário:", textoAtual);
+      if (!novo || novo === textoAtual) return;
+      const ref = db.ref(`conteudos/${conteudoId}/comentarios/${id}`);
+      ref.update({ texto: novo });
+    }
+
+    function responderComentario(id) {
+      const resposta = prompt("Digite sua resposta:");
+      if (!resposta) return;
+      const ref = db.ref(`conteudos/${conteudoId}/comentarios/${id}/respostas`).push();
+      ref.set({ texto: resposta });
+    }
+
+    window.onload = () => {
+      if (!conteudoId) {
+        alert("Conteúdo não encontrado.");
+        return;
+      }
+      carregarConteudo();
+    };
+
+    // Fechar modal ao clicar fora
+    document.addEventListener("click", function (e) {
+      const modal = document.getElementById("comentariosModal");
+      const dentro = modal.contains(e.target);
+      const botao = e.target.closest(".material-icons");
+
+      if (!dentro && !botao) {
+        modal.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Criar Efeito - LIFELINE</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      background: #111;
+      padding: 12px 16px;
+      border-bottom: 1px solid #222;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header h2 {
+      font-size: 16px;
+    }
+    .tabs {
+      display: flex;
+      justify-content: space-around;
+      background: #111;
+      border-bottom: 1px solid #222;
+    }
+    .tab {
+      padding: 12px;
+      cursor: pointer;
+      flex: 1;
+      text-align: center;
+      color: #aaa;
+    }
+    .tab.active {
+      color: white;
+      border-bottom: 2px solid #1e90ff;
+    }
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    .panel {
+      display: none;
+    }
+    .panel.active {
+      display: block;
+    }
+
+    .placeholder {
+      border: 1px dashed #444;
+      padding: 40px;
+      text-align: center;
+      border-radius: 10px;
+      background: #111;
+      font-size: 14px;
+    }
+
+    .material-icons {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <i class="material-icons" onclick="history.back()">arrow_back</i>
+    <h2>Criar Efeito</h2>
+    <i class="material-icons">save</i>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="trocarAba(0)">Filtros</div>
+    <div class="tab" onclick="trocarAba(1)">Stickers & Textos</div>
+    <div class="tab" onclick="trocarAba(2)">Efeito Jogo</div>
+    <div class="tab" onclick="trocarAba(3)">Slideshow</div>
+  </div>
+
+  <div class="content">
+    <!-- Filtros -->
+    <div class="panel active" id="panel0">
+      <div class="placeholder">Área para aplicar e testar filtros visuais (brilho, contraste, etc).</div>
+    </div>
+
+    <!-- Stickers & Textos -->
+    <div class="panel" id="panel1">
+      <div class="placeholder">Ferramentas para adicionar stickers, textos animados e ícones.</div>
+    </div>
+
+    <!-- Efeito Jogo -->
+    <div class="panel" id="panel2">
+      <div class="placeholder">Criação de efeitos interativos tipo mini-games.</div>
+    </div>
+
+    <!-- Slideshow -->
+    <div class="panel" id="panel3">
+      <div class="placeholder">Área para criar efeitos com múltiplas fotos e transições.</div>
+    </div>
+  </div>
+
+  <script>
+    function trocarAba(index) {
+      document.querySelectorAll('.tab').forEach((t, i) => {
+        t.classList.toggle('active', i === index);
+      });
+      document.querySelectorAll('.panel').forEach((p, i) => {
+        p.classList.toggle('active', i === index);
+      });
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Converter em Presente</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: #111;
+      border-bottom: 1px solid #222;
+    }
+    header h1 {
+      font-size: 18px;
+    }
+    .material-icons { cursor: pointer; }
+
+    .container {
+      padding: 20px;
+    }
+
+    .cartao-saldo {
+      background: linear-gradient(135deg, #1e90ff, #007bff);
+      border-radius: 16px;
+      padding: 20px;
+      color: #fff;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    .cartao-saldo h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .cartao-saldo p {
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .sugestoes {
+      margin-bottom: 20px;
+    }
+
+    .sugestoes h3 {
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .card {
+      background: #1a1a1a;
+      padding: 12px 14px;
+      border: 1px solid #333;
+      border-radius: 10px;
+      font-size: 13px;
+      color: #fff;
+      cursor: pointer;
+      flex: 1;
+      text-align: center;
+      transition: background 0.2s;
+    }
+
+    .card:hover {
+      background: #1e90ff;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: #1a1a1a;
+      color: #fff;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #1e90ff;
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #007bff;
+    }
+
+    #resultado {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+      color: #0f0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div onclick="history.back()"><i class="material-icons">arrow_back</i></div>
+  <h1>Converter em Presente</h1>
+  <div></div>
+</header>
+
+<div class="container">
+
+  <div class="cartao-saldo">
+    <h3>Saldo Atual</h3>
+    <p>Moeda virtual: <strong>340 Lin</strong><br>Saldo em €: <strong>€5.40</strong></p>
+  </div>
+
+  <div class="sugestoes">
+    <h3>Sugestões rápidas</h3>
+    <div class="cards">
+      <div class="card" onclick="preencherValor(10)">€1 = 10 Lin = 🎁1</div>
+      <div class="card" onclick="preencherValor(50)">€5 = 50 Lin = 🎁5</div>
+      <div class="card" onclick="preencherValor(100)">€10 = 100 Lin = 🎁10</div>
+      <div class="card" onclick="preencherValor(200)">€20 = 200 Lin = 🎁20</div>
+    </div>
+  </div>
+
+  <input type="number" id="valor" placeholder="Quantos Lin deseja converter?" oninput="calcularPresente()">
+  <button onclick="converter()">Converter</button>
+
+  <div id="resultado"></div>
+
+</div>
+
+<script>
+  function preencherValor(lin) {
+    document.getElementById("valor").value = lin;
+    calcularPresente();
+  }
+
+  function calcularPresente() {
+    const lin = parseInt(document.getElementById("valor").value);
+    const resultado = document.getElementById("resultado");
+
+    if (!lin || lin <= 0) {
+      resultado.innerHTML = "";
+      return;
+    }
+
+    const presente = Math.floor(lin / 10);
+    resultado.innerHTML = `Você receberá 🎁 <strong>${presente}</strong> presentes`;
+  }
+
+  function converter() {
+    const lin = parseInt(document.getElementById("valor").value);
+    if (!lin || lin <= 0) {
+      alert("Insira um valor válido para converter.");
+      return;
+    }
+    const presente = Math.floor(lin / 10);
+    alert(`Conversão feita com sucesso! 🎁 ${presente} presente(s) adicionados à sua conta.`);
+    document.getElementById("valor").value = "";
+    document.getElementById("resultado").innerHTML = "";
+  }
+</script>
+
+</body>
+</html>

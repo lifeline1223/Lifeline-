@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Responder Comentário</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #000;
+      color: white;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .responder-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: #111;
+    }
+    .header {
+      padding: 10px 16px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid #333;
+    }
+    .header i {
+      cursor: pointer;
+      color: #1e90ff;
+    }
+    .main-comment {
+      padding: 16px;
+      border-bottom: 1px solid #333;
+    }
+    .profile-img {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+    .comment-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      position: relative;
+    }
+    .comment-body {
+      flex: 1;
+    }
+    .comment-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+    }
+    .comment-header span {
+      opacity: 0.6;
+      font-size: 12px;
+    }
+    .comment-text {
+      margin-top: 4px;
+      font-size: 15px;
+    }
+    .comment-footer {
+      display: flex;
+      gap: 16px;
+      margin-top: 6px;
+    }
+    .comment-footer button {
+      background: transparent;
+      border: none;
+      color: #999;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .reaction-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #222;
+      padding: 12px;
+      border-radius: 12px;
+      display: none;
+      flex-wrap: wrap;
+      width: 220px;
+      justify-content: space-around;
+      z-index: 9999;
+      animation: popupIn 0.2s ease;
+    }
+    .emoji {
+      font-size: 28px;
+      margin: 8px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .emoji:hover {
+      transform: scale(1.3);
+    }
+    @keyframes popupIn {
+      from {opacity: 0; transform: scale(0.8);}
+      to {opacity: 1; transform: scale(1);}
+    }
+    .respostas-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 16px;
+    }
+    .input-bar {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-top: 1px solid #333;
+      background-color: #111;
+      gap: 10px;
+    }
+    .input-bar input {
+      flex: 1;
+      background: #222;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 20px;
+      color: white;
+    }
+    .input-bar i {
+      font-size: 24px;
+      color: #1e90ff;
+      cursor: pointer;
+    }
+    .reply-to {
+      padding: 4px 16px;
+      font-size: 13px;
+      color: #aaa;
+    }
+    #gravacaoDropdown {
+      position: fixed;
+      bottom: 70px;
+      left: 12px;
+      right: 12px;
+      background: #111;
+      border-radius: 14px;
+      padding: 12px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      color: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      z-index: 9999;
+    }
+    .barra-audio {
+      height: 20px;
+      background: repeating-linear-gradient(to right, #1e90ff 0 5px, #000 5px 10px);
+      border-radius: 8px;
+    }
+    .botoes-audio {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .botoes-audio button {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: white;
+    }
+    .botoes-audio .enviar {
+      background: #007bff;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 16px;
+    }
+    .menu-3pontos {
+      position: absolute;
+      top: 6px;
+      right: 4px;
+    }
+    .menu-3pontos i {
+      cursor: pointer;
+    }
+    .menu-opcoes {
+      display: none;
+      position: absolute;
+      top: 24px;
+      right: 0;
+      background: #222;
+      border: 1px solid #444;
+      border-radius: 10px;
+      flex-direction: column;
+      z-index: 10000;
+    }
+    .menu-opcoes button {
+      background: transparent;
+      color: white;
+      border: none;
+      padding: 10px 12px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      width: 160px;
+    }
+    .menu-opcoes button:hover {
+      background: #333;
+    }
+  </style>
+</head>
+<body>
+<div class="responder-container">
+  <div class="header">
+    <i class="material-icons" onclick="voltarParaComentarios()">arrow_back</i>
+    <span>Respostas</span>
+  </div>
+
+  <div class="main-comment">
+    <div class="comment-box">
+      <img src="https://i.pravatar.cc/100?img=3" class="profile-img" onclick="irParaPerfil('outro')">
+      <div class="comment-body">
+        <div class="comment-header">
+          <strong id="nomePrincipal">Camila</strong>
+          <span>• 1h atrás</span>
+        </div>
+        <div class="comment-text" id="textoPrincipal">Amei esse lugar, parece mágico ✨</div>
+        <div class="comment-footer">
+          <button onclick="abrirReacoes(this)">👍</button>
+          <button onclick="responder('Camila')">Responder</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="respostas-list" id="respostasList"></div>
+  <div class="reply-to" id="respondendoA"></div>
+
+  <div class="input-bar">
+    <input type="text" placeholder="Responder..." id="respostaInput"/>
+    <i class="material-icons" onclick="gravarAudio()">mic</i>
+    <i class="material-icons" onclick="enviarResposta()">send</i>
+  </div>
+</div>
+
+<!-- POPUP DE REAÇÃO -->
+<div class="reaction-popup" id="reactionPopup">
+  <div class="emoji" onclick="selecionarReacao('❤️')">❤️</div>
+  <div class="emoji" onclick="selecionarReacao('🤣')">🤣</div>
+  <div class="emoji" onclick="selecionarReacao('😭')">😭</div>
+  <div class="emoji" onclick="selecionarReacao('😡')">😡</div>
+  <div class="emoji" onclick="selecionarReacao('👍')">👍</div>
+  <div class="emoji" onclick="selecionarReacao('😅')">😅</div>
+</div>
+
+<!-- ÁREA DE GRAVAÇÃO -->
+<div id="gravacaoDropdown">
+  <div style="display: flex; justify-content: space-between;">
+    <span id="tempoGravacao">00:00</span>
+    <span style="font-size: 14px; opacity: 0.5;">Gravando...</span>
+  </div>
+  <div class="barra-audio"></div>
+  <div class="botoes-audio">
+    <button onclick="cancelarGravacao()"><i class="material-icons">close</i></button>
+    <button onclick="pausarGravacao()" id="btnPause"><i class="material-icons">pause</i></button>
+    <button class="enviar" onclick="enviarGravacao()"><i class="material-icons">send</i></button>
+  </div>
+</div><script>
+let respostas = JSON.parse(localStorage.getItem('respostasKunta')) || [];
+let responderPara = "";
+let botaoReagirAtivo = null;
+let indexReagirAtivo = null;
+let tempo = 0;
+let pausado = false;
+let interval = null;
+
+// Navegação
+function voltarParaComentarios() {
+  window.location.href = "comentarios.html";
+}
+function irParaPerfil(tipo) {
+  window.location.href = tipo === 'meu' ? 'perfil.html' : 'usuario.html';
+}
+
+// Reações
+function abrirReacoes(botao) {
+  botaoReagirAtivo = botao;
+  indexReagirAtivo = botao.dataset.index;
+  document.getElementById('reactionPopup').style.display = 'flex';
+}
+function selecionarReacao(emoji) {
+  if (botaoReagirAtivo && indexReagirAtivo !== null) {
+    respostas[indexReagirAtivo].reacao = emoji;
+    salvarRespostas();
+    renderizarRespostas();
+  }
+  document.getElementById('reactionPopup').style.display = 'none';
+}
+
+// Responder
+function responder(nome) {
+  responderPara = nome;
+  document.getElementById('respondendoA').innerText = `Respondendo a ${nome}`;
+}
+
+// Enviar texto
+function enviarResposta() {
+  const input = document.getElementById('respostaInput');
+  const texto = input.value.trim();
+  if (!texto) return;
+
+  // Verifica se é edição
+  if (input.dataset.editando === "true") {
+    const index = parseInt(input.dataset.index);
+    respostas[index].texto = texto;
+    input.dataset.editando = "false";
+    input.dataset.index = "";
+  } else {
+    respostas.push({ autor: 'Você', texto, tempo: 'agora', para: responderPara, minhaConta: true });
+  }
+
+  input.value = '';
+  responderPara = '';
+  document.getElementById('respondendoA').innerText = '';
+  salvarRespostas();
+  renderizarRespostas();
+}
+
+// LocalStorage
+function salvarRespostas() {
+  localStorage.setItem('respostasKunta', JSON.stringify(respostas));
+}
+
+// Renderizar comentários
+function renderizarRespostas() {
+  const lista = document.getElementById('respostasList');
+  lista.innerHTML = '';
+  respostas.forEach((r, i) => {
+    const link = r.minhaConta ? 'perfil.html' : 'usuario.html';
+    const para = r.para ? `<small style="color:#aaa;">↳ @${r.para}</small><br>` : '';
+    const isAudio = r.texto.includes('🎤');
+    const audioBtn = isAudio ? `
+      <div style="margin-top: 6px;">
+        <button style="background:#1e3a8a;border:none;padding:6px 12px;border-radius:20px;color:white;cursor:pointer;" onclick="ouvirAudio('${r.texto}')">
+          <i class="material-icons" style="vertical-align:middle;">play_arrow</i> Ouvir áudio
+        </button>
+      </div>` : '';
+    const reacao = r.reacao || '';
+
+    lista.innerHTML += `
+      <div class="comment-box">
+        <img src="https://i.pravatar.cc/100?img=${i + 12}" class="profile-img" onclick="window.location.href='${link}'">
+        <div class="comment-body">
+          <div class="comment-header">
+            <strong>${r.autor}</strong><span> • ${r.tempo}</span>
+          </div>
+          <div class="comment-text">${para}${r.texto}</div>
+          ${audioBtn}
+          <div class="comment-footer">
+            <button onclick="abrirReacoes(this)" data-index="${i}">${reacao || 'Reagir'}</button>
+            <button onclick="responder('${r.autor}')">Responder</button>
+          </div>
+        </div>
+        <div class="menu-3pontos" onclick="abrirMenu(${i}, this)">
+          <i class="material-icons">more_vert</i>
+          <div class="menu-opcoes" id="menu-${i}">
+            ${r.minhaConta ? `
+              <button onclick="editarResposta(${i})"><i class="material-icons">edit</i> Editar</button>
+              <button onclick="ocultar(${i})"><i class="material-icons">visibility_off</i> Ocultar</button>
+              <button onclick="copiarTexto(${i})"><i class="material-icons">content_copy</i> Copiar</button>
+            ` : `
+              <button onclick="bloquear(${i})"><i class="material-icons">block</i> Bloquear</button>
+              <button onclick="ocultar(${i})"><i class="material-icons">visibility_off</i> Ocultar</button>
+              <button onclick="copiarTexto(${i})"><i class="material-icons">content_copy</i> Copiar</button>
+            `}
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  fecharTodosMenus();
+}
+
+// Simular ouvir áudio
+function ouvirAudio(texto) {
+  console.log("Tocando áudio: " + texto);
+}
+
+// Gravação
+function gravarAudio() {
+  document.getElementById('gravacaoDropdown').style.display = 'flex';
+  tempo = 0;
+  pausado = false;
+  atualizarTempo();
+  interval = setInterval(() => {
+    if (!pausado) {
+      tempo++;
+      atualizarTempo();
+    }
+  }, 1000);
+}
+function atualizarTempo() {
+  const min = String(Math.floor(tempo / 60)).padStart(2, '0');
+  const seg = String(tempo % 60).padStart(2, '0');
+  document.getElementById('tempoGravacao').innerText = `${min}:${seg}`;
+}
+function pausarGravacao() {
+  pausado = !pausado;
+  document.getElementById('btnPause').innerHTML = `<i class="material-icons">${pausado ? 'play_arrow' : 'pause'}</i>`;
+}
+function cancelarGravacao() {
+  clearInterval(interval);
+  document.getElementById('gravacaoDropdown').style.display = 'none';
+  tempo = 0;
+}
+function enviarGravacao() {
+  clearInterval(interval);
+  document.getElementById('gravacaoDropdown').style.display = 'none';
+  const tempoStr = `${String(Math.floor(tempo / 60)).padStart(2, '0')}:${String(tempo % 60).padStart(2, '0')}`;
+  respostas.push({ autor: 'Você', texto: `🎤 Áudio - ${tempoStr}`, tempo: 'agora', para: responderPara, minhaConta: true });
+  tempo = 0;
+  salvarRespostas();
+  renderizarRespostas();
+}
+
+// Menu 3 Pontos
+function abrirMenu(i, el) {
+  fecharTodosMenus();
+  const menu = document.getElementById(`menu-${i}`);
+  menu.style.display = 'flex';
+  event.stopPropagation();
+}
+function fecharTodosMenus() {
+  const menus = document.querySelectorAll('.menu-opcoes');
+  menus.forEach(m => m.style.display = 'none');
+}
+
+// Opções
+function editarResposta(i) {
+  const input = document.getElementById('respostaInput');
+  input.value = respostas[i].texto;
+  input.focus();
+  input.dataset.editando = "true";
+  input.dataset.index = i;
+}
+function ocultar(i) {
+  respostas.splice(i, 1);
+  salvarRespostas();
+  renderizarRespostas();
+}
+function bloquear(i) {
+  console.log("Usuário bloqueado.");
+}
+function copiarTexto(i) {
+  navigator.clipboard.writeText(respostas[i].texto);
+}
+
+// Auto iniciar
+document.body.addEventListener("click", fecharTodosMenus);
+window.onload = renderizarRespostas;
+</script>
+</body>
+</html>

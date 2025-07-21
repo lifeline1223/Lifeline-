@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Verificação Avançada - Lifeline</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    header {
+      background: #111;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #222;
+    }
+    header h1 {
+      font-size: 18px;
+      margin-left: 10px;
+    }
+    .container {
+      margin-top: 20px;
+    }
+    p {
+      color: #ccc;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+    input, select, textarea, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 6px;
+      color: white;
+      font-size: 14px;
+    }
+    button {
+      background: #1e90ff;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background: #007bff;
+    }
+    .status {
+      background: #111;
+      padding: 15px;
+      border: 1px solid #444;
+      border-radius: 6px;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+    .section-title {
+      font-weight: bold;
+      margin-top: 20px;
+      color: #1e90ff;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div onclick="history.back()" style="cursor:pointer;">←</div>
+  <h1>Verificação Avançada</h1>
+</header>
+
+<div class="container">
+  <p class="section-title">Requisitos para verificação no Lifeline:</p>
+
+  <p>✔️ Ser uma empresa ou figura pública reconhecida;</p>
+  <p>✔️ Ter conta pública e presença online verdadeira;</p>
+  <p>✔️ Fornecer documentos oficiais para comprovar identidade/autenticidade.</p>
+
+  <p class="section-title">Documentos exigidos:</p>
+  <ul style="color:#ccc; padding-left:18px; font-size:14px;">
+    <li> Documento de identidade oficial (BI, passaporte...)</li>
+    <li> Comprovante de endereço</li>
+    <li> Link de prova de autenticidade (ex: site oficial, rede social verificada)</li>
+  </ul>
+
+  <p class="section-title">Formulário de Solicitação:</p>
+
+  <form onsubmit="enviarVerificacaoAvancada(event)">
+    <input type="text" id="nome" placeholder="Nome completo" required>
+    
+    <select id="tipoConta" required>
+      <option value="">Tipo de conta</option>
+      <option value="Empresa">Empresa</option>
+      <option value="Figura Pública">Figura Pública</option>
+    </select>
+
+    <input type="text" id="link" placeholder="Link do site ou rede social oficial" required>
+    
+    <textarea id="justificativa" rows="3" placeholder="Explique por que você merece a verificação" required></textarea>
+    
+    <label>Documento de identidade:</label>
+    <input type="file" accept=".jpg,.jpeg,.png,.pdf" required>
+
+    <label>Comprovante de endereço:</label>
+    <input type="file" accept=".jpg,.jpeg,.png,.pdf" required>
+
+    <label>Outro comprovativo (opcional):</label>
+    <input type="file" accept=".jpg,.jpeg,.png,.pdf">
+
+    <button type="submit">Enviar Solicitação</button>
+  </form>
+
+  <div class="status" id="statusBox" style="display:none;"></div>
+</div>
+
+<script>
+  function enviarVerificacaoAvancada(event) {
+    event.preventDefault();
+
+    const nome = document.getElementById("nome").value.trim();
+    const tipo = document.getElementById("tipoConta").value;
+    const link = document.getElementById("link").value.trim();
+    const justificativa = document.getElementById("justificativa").value.trim();
+
+    if (!nome || !tipo || !link || !justificativa) {
+      alert("Preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    const dados = {
+      nome,
+      tipo,
+      link,
+      justificativa,
+      status: "Aguardando revisão da equipe"
+    };
+
+    localStorage.setItem("verificacaoAvancadaLifeline", JSON.stringify(dados));
+    mostrarStatus();
+  }
+
+  function mostrarStatus() {
+    const dados = JSON.parse(localStorage.getItem("verificacaoAvancadaLifeline"));
+    if (!dados) return;
+
+    const box = document.getElementById("statusBox");
+    box.style.display = "block";
+    box.innerHTML = `
+      <strong>Status da Solicitação:</strong><br>
+      Nome: ${dados.nome}<br>
+      Conta: ${dados.tipo}<br>
+      Link: ${dados.link}<br>
+      Situação: <span style="color:#1e90ff;">${dados.status}</span><br><br>
+      <em>A equipe do Lifeline irá analisar manualmente sua solicitação.</em>
+    `;
+  }
+
+  window.onload = mostrarStatus;
+</script>
+
+</body>
+</html>

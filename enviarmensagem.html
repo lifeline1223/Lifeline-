@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solicitações de Mensagens</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #111;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      border-bottom: 1px solid #333;
+    }
+
+    .back-button {
+      font-size: 24px;
+      margin-right: 12px;
+      cursor: pointer;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .container {
+      padding: 16px;
+    }
+
+    .solicitacao {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #1b1b1b;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+
+    .info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .info img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+    }
+
+    .info .nome {
+      font-weight: bold;
+    }
+
+    .mensagem-preview {
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    .acoes {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .acoes button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .aceitar {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .recusar {
+      background-color: #444;
+      color: white;
+    }
+
+    .vazio {
+      text-align: center;
+      margin-top: 40px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="back-button" onclick="voltar()">←</div>
+    <div class="title">Solicitações</div>
+  </header>
+
+  <div class="container" id="lista-solicitacoes">
+    <!-- Exemplo de solicitação -->
+    <div class="solicitacao">
+      <div class="info">
+        <img src="https://via.placeholder.com/50" alt="Foto usuário">
+        <div>
+          <div class="nome">Pedro Costa</div>
+          <div class="mensagem-preview">Olá, podemos conversar?</div>
+        </div>
+      </div>
+      <div class="acoes">
+        <button class="aceitar" onclick="aceitar(this)">Aceitar</button>
+        <button class="recusar" onclick="recusar(this)">Recusar</button>
+      </div>
+    </div>
+
+    <!-- Você pode duplicar esse bloco acima para múltiplas solicitações -->
+  </div>
+
+  <script>
+    function voltar() {
+      window.location.href = "mensagem.html";
+    }
+
+    function aceitar(botao) {
+      // Redireciona para tela de conversa
+      window.location.href = "enviarmensagem.html";
+    }
+
+    function recusar(botao) {
+      const card = botao.closest('.solicitacao');
+      card.remove();
+
+      const lista = document.getElementById("lista-solicitacoes");
+      if (lista.children.length === 0) {
+        lista.innerHTML = "<div class='vazio'>Sem novas solicitações de mensagens.</div>";
+      }
+    }
+  </script>
+
+</body>
+</html>

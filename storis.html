@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Stories</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body,
+    html {
+      height: 100%;
+      width: 100%;
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: #fff;
+      overflow: hidden;
+    }
+    .story-container {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #000;
+    }
+    .story-media {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: cover;
+      display: block;
+      user-select: none;
+    }
+    video.story-media {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: #000;
+    }
+    .progress-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: #1e90ff;
+      width: 0%;
+      z-index: 3;
+    }
+    .top-bar {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 10;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+    .user-info img {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid #1e90ff;
+    }
+    .user-info span {
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .top-icons {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .top-icons i {
+      font-size: 24px;
+      cursor: pointer;
+      color: #fff;
+    }
+    .acoes {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 10;
+      align-items: center;
+      font-size: 12px;
+      color: #ccc;
+      user-select: none;
+    }
+    .acoes i {
+      cursor: pointer;
+      font-size: 28px;
+      color: #fff;
+      user-select: none;
+    }
+    .acoes i:hover {
+      color: #1e90ff;
+    }
+  </style>
+</head>
+<body>
+  <div
+    class="story-container"
+    id="storyArea"
+    onpointerdown="pausarStory()"
+    onpointerup="continuarStory()"
+  >
+    <!-- Container para foto ou vídeo -->
+    <img
+      id="storyImg"
+      class="story-media"
+      src="story1.jpg"
+      alt="Story"
+      style="display: none;"
+      draggable="false"
+    />
+    <video
+      id="storyVideo"
+      class="story-media"
+      src="story2.mp4"
+      muted
+      playsinline
+      style="display: none;"
+    ></video>
+
+    <div class="progress-bar" id="progressBar"></div>
+
+    <div class="top-bar">
+      <div class="user-info" onclick="irParaPerfil()">
+        <img src="perfil1.jpg" alt="User" />
+        <span>João Salvador</span>
+      </div>
+      <div class="top-icons">
+        <i class="material-icons" onclick="mostrarOpcoes()">more_vert</i>
+        <i class="material-icons" onclick="fecharStory()">close</i>
+      </div>
+    </div>
+
+    <div class="acoes">
+      <i class="material-icons" onclick="partilhar()" title="Compartilhar">send</i>
+      <div>
+        <i
+          id="visualizacaoIcon"
+          class="material-icons"
+          onclick="abrirReacoes()"
+          title="Ver reações"
+          >visibility</i
+        >
+        <div id="contadorVisualizacoes">12</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="opcoesModal" style="display:none; position:absolute; top:50px; right:10px; background:#111; padding:10px; border-radius:6px; border:1px solid #333; z-index:99;">
+    <div onclick="apagarStory()">Apagar Story</div>
+  </div>
+
+  <script>
+    const stories = [
+      {
+        type: "image",
+        src: "story1.jpg",
+      },
+      {
+        type: "video",
+        src: "story2.mp4",
+      },
+      {
+        type: "image",
+        src: "story3.jpg",
+      },
+    ];
+
+    let currentIndex = 0;
+    let paused = false;
+    let progresso;
+    const imgEl = document.getElementById("storyImg");
+    const videoEl = document.getElementById("storyVideo");
+    const bar = document.getElementById("progressBar");
+    const contadorEl = document.getElementById("contadorVisualizacoes");
+    const opcoesModal = document.getElementById("opcoesModal");
+
+    function carregarStory(index) {
+      if (index >= stories.length) {
+        window.location.href = "feed.html";
+        return;
+      }
+
+      clearTimeout(progresso);
+      bar.style.transition = "none";
+      bar.style.width = "0%";
+
+      const story = stories[index];
+
+      // Oculta ambos antes
+      imgEl.style.display = "none";
+      videoEl.style.display = "none";
+      videoEl.pause();
+      videoEl.currentTime = 0;
+
+      if (story.type === "image") {
+        imgEl.src = story.src;
+        imgEl.style.display = "block";
+        iniciarProgresso(5000);
+      } else if (story.type === "video") {
+        videoEl.src = story.src;
+        videoEl.style.display = "block";
+        videoEl.muted = true;
+        videoEl.play();
+        videoEl.onended = () => {
+          nextStory();
+        };
+        iniciarProgresso(videoEl.duration * 1000 || 5000);
+      }
+    }
+
+    function iniciarProgresso(duracao) {
+      // Inicia a barra de progresso com duração dinâmica
+      bar.style.transition = "none";
+      bar.style.width = "0%";
+      setTimeout(() => {
+        bar.style.transition = `width ${duracao}ms linear`;
+        bar.style.width = "100%";
+      }, 50);
+
+      progresso = setTimeout(() => {
+        nextStory();
+      }, duracao);
+    }
+
+    function nextStory() {
+      currentIndex++;
+      if (currentIndex >= stories.length) {
+        window.location.href = "feed.html";
+        return;
+      }
+      carregarStory(currentIndex);
+    }
+
+    // Pausar story quando dedo está na tela
+    function pausarStory() {
+      if (paused) return;
+      paused = true;
+      clearTimeout(progresso);
+      bar.style.transition = "none";
+      // Pausar vídeo se estiver tocando
+      if (videoEl.style.display === "block") {
+        videoEl.pause();
+      }
+    }
+
+    // Continuar story ao tirar dedo da tela
+    function continuarStory() {
+      if (!paused) return;
+      paused = false;
+
+      // Se vídeo, continua vídeo e barra
+      if (videoEl.style.display === "block") {
+        videoEl.play();
+        const duracaoRestante = (videoEl.duration - videoEl.currentTime) * 1000;
+        iniciarProgresso(duracaoRestante);
+      } else {
+        // Se imagem, reinicia barra e timeout com o tempo restante
+        iniciarProgresso(5000);
+      }
+    }
+
+    function irParaPerfil() {
+      window.location.href = "usuario.html";
+    }
+
+    function fecharStory() {
+      window.location.href = "feed.html";
+    }
+
+    function partilhar() {
+      window.location.href = "partilhar.html";
+    }
+
+    function mostrarOpcoes() {
+      opcoesModal.style.display = opcoesModal.style.display === "block" ? "none" : "block";
+    }
+
+    function apagarStory() {
+      // Remove o story atual da lista
+      stories.splice(currentIndex, 1);
+
+      // Se acabou os stories, volta ao feed
+      if (stories.length === 0) {
+        window.location.href = "feed.html";
+        return;
+      }
+
+      // Ajusta currentIndex se necessário
+      if (currentIndex >= stories.length) {
+        currentIndex = stories.length - 1;
+      }
+
+      opcoesModal.style.display = "none";
+      carregarStory(currentIndex);
+    }
+
+    function abrirReacoes() {
+      // Passa o índice atual do story para a página de reações
+      window.location.href = "reacoes1.html?story=" + (currentIndex + 1);
+    }
+
+    // Navegação lateral por clique no lado da tela
+    document.getElementById("storyArea").addEventListener("click", (e) => {
+      if (opcoesModal.style.display === "block") {
+        opcoesModal.style.display = "none";
+        return;
+      }
+      if (e.target.id === "visualizacaoIcon" || e.target.closest("#visualizacaoIcon")) return; // Não navega se clicou no ícone de visualização
+
+      if (document.getElementById("storyVideo").style.display === "block" && !paused) return; // Bloqueia clique para avançar se vídeo estiver tocando e não pausado
+
+      const x = e.clientX;
+      const largura = window.innerWidth;
+      if (x > largura * 0.7) {
+        nextStory();
+      } else if (x < largura * 0.3) {
+        currentIndex = Math.max(0, currentIndex - 1);
+        carregarStory(currentIndex);
+      }
+    });
+
+    window.onload = () => {
+      carregarStory(currentIndex);
+    };
+  </script>
+</body>
+</html>

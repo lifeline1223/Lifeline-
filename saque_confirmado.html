@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Saque Confirmado</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      background: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      height: 100vh;
+      text-align: center;
+    }
+
+    .material-icons {
+      font-size: 70px;
+      color: #4caf50;
+      margin-bottom: 15px;
+    }
+
+    .detalhes {
+      background: #111;
+      border-left: 4px solid #4caf50;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .detalhes p {
+      margin: 8px 0;
+      font-size: 15px;
+      color: #ccc;
+    }
+
+    button {
+      padding: 14px;
+      background: #1e90ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    button:hover {
+      background: #007bff;
+    }
+  </style>
+</head>
+<body>
+
+  <i class="material-icons">check_circle</i>
+  <h2>Saque Confirmado</h2>
+
+  <div class="detalhes" id="infoSaque">
+    <!-- Dados inseridos via JavaScript -->
+  </div>
+
+  <button onclick="window.location.href='conta.html'">Voltar à Conta</button>
+
+  <script>
+    const dados = JSON.parse(localStorage.getItem("ultimoSaque") || "{}");
+    const div = document.getElementById("infoSaque");
+
+    if (dados.valor && dados.metodo) {
+      div.innerHTML = `
+        <p><strong>Valor:</strong> €${dados.valor.toFixed(2)}</p>
+        <p><strong>Método:</strong> ${dados.metodo}</p>
+        <p><strong>Status:</strong> Em processamento</p>
+      `;
+    } else {
+      div.innerHTML = "<p>Informações do saque não encontradas.</p>";
+    }
+  </script>
+
+</body>
+</html>

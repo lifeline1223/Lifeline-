@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Notificações - LIFELINE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: white;
+      min-height: 100vh;
+      padding-bottom: 60px;
+    }
+
+    .header {
+      background: #111;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      border-bottom: 1px solid #222;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header h2 {
+      font-size: 18px;
+    }
+
+    .header i {
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .search-container {
+      display: none;
+      padding: 10px 16px;
+      background: #111;
+      border-bottom: 1px solid #222;
+    }
+
+    .search-container input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      background: #222;
+      color: white;
+      font-size: 14px;
+    }
+
+    .container {
+      padding: 16px;
+    }
+
+    .notification {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px solid #222;
+    }
+
+    .notification-left {
+      display: flex;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .notification-left img {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      cursor: pointer;
+    }
+
+    .content p {
+      margin: 0;
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .actions button {
+      background: #00aaff;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 4px;
+      color: white;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .actions span {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .dropdown-container {
+      position: relative;
+    }
+
+    .dropdown-container i {
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 22px;
+      right: 0;
+      background-color: #222;
+      border: 1px solid #333;
+      border-radius: 6px;
+      min-width: 160px;
+      z-index: 1;
+    }
+
+    .dropdown-content div {
+      padding: 10px;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .dropdown-content div:hover {
+      background-color: #333;
+    }
+
+    .dropdown-container:hover .dropdown-content {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-left">
+      <i class="material-icons" onclick="window.location.href='feed.html'">arrow_back</i>
+      <h2>Notificações</h2>
+    </div>
+    <i class="material-icons" onclick="abrirPesquisa()">search</i>
+  </div>
+
+  <div class="search-container" id="searchBox">
+    <input type="text" placeholder="Pesquisar notificações..." oninput="pesquisarNotificacoes(this.value)">
+  </div>
+
+  <div class="container" id="listaNotificacoes">
+    <!-- Notificações serão inseridas aqui -->
+  </div>
+
+  <script>
+    const nomeUsuario = "Joana"; // Substituir conforme login
+
+    function abrirPesquisa() {
+      const search = document.getElementById('searchBox');
+      search.style.display = (search.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function pesquisarNotificacoes(valor) {
+      const todas = JSON.parse(localStorage.getItem("notificacoes_" + nomeUsuario)) || [];
+      const filtradas = todas.filter(n => n.mensagem.toLowerCase().includes(valor.toLowerCase()));
+      mostrarNotificacoes(filtradas);
+    }
+
+    function seguir(nome) {
+      alert("Conferência aceita! Você será direcionado...");
+    }
+
+    function mostrarNotificacoes(lista) {
+      const container = document.getElementById("listaNotificacoes");
+      container.innerHTML = "";
+
+      if (lista.length === 0) {
+        container.innerHTML = `<p style="text-align:center; color:#888; margin-top:20px;">Nenhuma notificação</p>`;
+        return;
+      }
+
+      lista.forEach((n) => {
+        const item = document.createElement("div");
+        item.className = "notification";
+        item.innerHTML = `
+          <div class="notification-left">
+            <a href="#">
+              <img src="https://via.placeholder.com/100x100.png?text=${n.mensagem.charAt(0)}" alt="img">
+            </a>
+            <div class="content">
+              <p>${n.mensagem}</p>
+              <div class="actions">
+                <button onclick="seguir('${n.mensagem}')">Entrar</button>
+                <span>${n.hora}</span>
+              </div>
+            </div>
+          </div>
+          <div class="dropdown-container">
+            <i class="material-icons">more_vert</i>
+            <div class="dropdown-content">
+              <div onclick="alert('Marcado como lido')">Marcar como lido</div>
+              <div onclick="alert('Ocultado')">Ocultar esta notificação</div>
+              <div onclick="eliminar('${n.hora}')">Eliminar notificação</div>
+            </div>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function eliminar(hora) {
+      let notificacoes = JSON.parse(localStorage.getItem("notificacoes_" + nomeUsuario)) || [];
+      notificacoes = notificacoes.filter(n => n.hora !== hora);
+      localStorage.setItem("notificacoes_" + nomeUsuario, JSON.stringify(notificacoes));
+      mostrarNotificacoes(notificacoes);
+    }
+
+    window.onload = () => {
+      const notificacoes = JSON.parse(localStorage.getItem("notificacoes_" + nomeUsuario)) || [];
+      mostrarNotificacoes(notificacoes);
+    };
+  </script>
+</body>
+</html>

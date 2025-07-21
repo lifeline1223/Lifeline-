@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Publicar Vídeo - LIFELINE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding-bottom: 70px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #111;
+      padding: 12px 16px;
+      border-bottom: 1px solid #222;
+    }
+    .header h2 {
+      font-size: 16px;
+    }
+    .material-icons {
+      cursor: pointer;
+    }
+    .video-preview {
+      position: relative;
+      width: 100%;
+      height: 250px;
+      background: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .video-preview video {
+      max-height: 100%;
+      max-width: 100%;
+    }
+    .music-icon {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid #00aaff;
+      animation: spin 4s linear infinite;
+    }
+    .music-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .container {
+      padding: 16px;
+    }
+    textarea {
+      width: 100%;
+      height: 80px;
+      background: #111;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px;
+      resize: none;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .option {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #222;
+    }
+    .option span {
+      font-size: 14px;
+    }
+    .toggle-btn {
+      width: 34px;
+      height: 18px;
+      background: #555;
+      border-radius: 10px;
+      position: relative;
+      cursor: pointer;
+    }
+    .toggle-btn.active {
+      background: #00aaff;
+    }
+    .toggle-btn::after {
+      content: '';
+      width: 16px;
+      height: 16px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 1px;
+      left: 1px;
+      transition: all 0.3s ease;
+    }
+    .toggle-btn.active::after {
+      left: 17px;
+    }
+    .bottom-buttons {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px;
+      background: #111;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      border-top: 1px solid #222;
+    }
+    .bottom-buttons button {
+      padding: 10px 16px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-agendar {
+      background: #444;
+      color: white;
+    }
+    .btn-publicar {
+      background: #00aaff;
+      color: white;
+    }
+    .dropdown {
+      position: relative;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: #222;
+      min-width: 140px;
+      border: 1px solid #333;
+      z-index: 1;
+      border-radius: 6px;
+    }
+    .dropdown-content div {
+      padding: 10px;
+      color: white;
+      cursor: pointer;
+    }
+    .dropdown-content div:hover {
+      background-color: #333;
+    }
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <i class="material-icons" onclick="window.location.href='reall1.html'">arrow_back</i>
+    <h2>Publicar Vídeo</h2>
+    <div class="dropdown">
+      <i class="material-icons">public</i>
+      <div class="dropdown-content" id="visOpt">
+        <div onclick="setVisibilidade('Público')">Público</div>
+        <div onclick="setVisibilidade('Apenas Amigos')">Apenas Amigos</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="video-preview">
+    <video id="video" controls autoplay muted></video>
+    <div class="music-icon" id="musicIcon">
+      <img src="https://via.placeholder.com/100x100.png?text=Música" alt="Música">
+    </div>
+  </div>
+
+  <div class="container">
+    <textarea id="descricao" placeholder="Escreva uma legenda..."></textarea>
+
+    <div class="option">
+      <span>Permitir comentários</span>
+      <div class="toggle-btn active" onclick="toggle(this, 'comentarios')"></div>
+    </div>
+
+    <div class="option">
+      <span>Permitir reações</span>
+      <div class="toggle-btn active" onclick="toggle(this, 'reacoes')"></div>
+    </div>
+
+    <div class="option">
+      <span>Permitir reutilização do conteúdo</span>
+      <div class="toggle-btn active" onclick="toggle(this, 'reutilizacao')"></div>
+    </div>
+
+    <div class="option">
+      <span>Ocultar contagem de gostos</span>
+      <div class="toggle-btn" onclick="toggle(this, 'ocultarGostos')"></div>
+    </div>
+
+    <div class="option">
+      <span>Ocultar contagem de partilhas</span>
+      <div class="toggle-btn" onclick="toggle(this, 'ocultarPartilhas')"></div>
+    </div>
+  </div>
+
+  <div class="bottom-buttons">
+    <button class="btn-agendar" onclick="window.location.href='agendar.html'">Agendar</button>
+    <button class="btn-publicar" onclick="publicar()">Publicar</button>
+  </div>
+
+  <script>
+    let configuracoes = {
+      visibilidade: 'Público',
+      comentarios: true,
+      reacoes: true,
+      reutilizacao: true,
+      ocultarGostos: false,
+      ocultarPartilhas: false
+    };
+
+    function toggle(el, campo) {
+      el.classList.toggle('active');
+      configuracoes[campo] = el.classList.contains('active');
+    }
+
+    function setVisibilidade(tipo) {
+      configuracoes.visibilidade = tipo;
+      alert("Visibilidade definida: " + tipo);
+    }
+
+    function publicar() {
+      const texto = document.getElementById('descricao').value;
+      const hashtags = [...texto.matchAll(/#(\w+)/g)].map(h => h[1]);
+      sessionStorage.setItem('videoSrc', document.getElementById('video').src);
+      sessionStorage.setItem('descricao', texto);
+      sessionStorage.setItem('hashtags', JSON.stringify(hashtags));
+      sessionStorage.setItem('configuracoes', JSON.stringify(configuracoes));
+      alert("Vídeo publicado!");
+      window.location.href = 'reall.html'; // Redirecionamento ao clicar em "Publicar"
+    }
+
+    window.onload = () => {
+      const video = document.getElementById('video');
+      const videoSrc = sessionStorage.getItem('videoEscolhido') || 'video.mp4';
+      video.src = videoSrc;
+
+      const capa = sessionStorage.getItem("capaMusica");
+      if (capa) {
+        document.getElementById("musicIcon").children[0].src = capa;
+      }
+    };
+  </script>
+
+</body>
+</html>

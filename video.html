@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>LIFELINE - Gravar Vídeo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background-color: black;
+      color: white;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+    .camera-view {
+      background: url('https://via.placeholder.com/600x1200?text=CÂMERA+ATIVA') no-repeat center center;
+      background-size: cover;
+      height: 100%;
+      width: 100%;
+      position: relative;
+      filter: none;
+    }
+    .top-bar {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      right: 15px;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 10px;
+    }
+    .top-bar i {
+      font-size: 28px;
+      cursor: pointer;
+    }
+    .category-bar {
+      position: absolute;
+      top: 50px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      font-size: 14px;
+      user-select: none;
+    }
+    .category-bar span {
+      cursor: pointer;
+      color: #aaa;
+      padding-bottom: 4px;
+    }
+    .category-bar .active {
+      color: white;
+      border-bottom: 2px solid white;
+    }
+    .right-controls {
+      position: absolute;
+      top: 100px;
+      right: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      user-select: none;
+    }
+    .right-controls .music-btn {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .right-controls .music-btn .material-icons {
+      font-size: 22px;
+      color: white;
+      position: relative;
+      z-index: 2;
+    }
+    .music-icon-preview {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background-size: cover;
+      background-position: center;
+      animation: spin 4s linear infinite;
+      z-index: 1;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .bottom-bar {
+      position: absolute;
+      bottom: 30px;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 20px;
+      user-select: none;
+    }
+    .bottom-bar i {
+      font-size: 24px;
+      background: rgba(255,255,255,0.1);
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .bottom-bar i:hover {
+      background: rgba(255,255,255,0.25);
+    }
+    .record-btn {
+      font-size: 36px;
+      background: red;
+      color: white;
+      border-radius: 50%;
+      padding: 16px;
+      border: 3px solid white;
+      cursor: pointer;
+      animation: pulse 1.5s infinite;
+      user-select: none;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.5); }
+      70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 0, 0, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+    }
+    #gravando, #cronometro {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 14px;
+      display: none;
+      user-select: none;
+    }
+    #gravando {
+      top: 20px;
+      background: rgba(255,0,0,0.7);
+      padding: 6px 12px;
+      border-radius: 20px;
+    }
+    #cronometro {
+      top: 52px;
+      color: #ccc;
+    }
+    #textoInserido {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 22px;
+      color: white;
+      cursor: move;
+      display: none;
+      padding: 4px 8px;
+      outline: none;
+      max-width: 70%;
+      word-break: break-word;
+      user-select: text;
+      background: rgba(0,0,0,0.3);
+      border-radius: 4px;
+    }
+    #stickerInserido {
+      position: absolute;
+      top: 60%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100px;
+      height: 100px;
+      display: none;
+      cursor: move;
+      z-index: 99;
+      user-select: none;
+    }
+    #popupFontes {
+      position: absolute;
+      top: 180px;
+      right: 60px;
+      width: 150px;
+      height: 140px;
+      background: #111;
+      border: 1px solid #555;
+      overflow-y: auto;
+      display: none;
+      z-index: 999;
+      border-radius: 6px;
+      user-select: none;
+    }
+    #popupFontes > div {
+      padding: 6px 10px;
+      cursor: pointer;
+      color: white;
+      font-weight: normal;
+    }
+    #popupFontes > div:hover {
+      background: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="camera-view" id="cameraView">
+    <div class="top-bar">
+      <i class="material-icons" title="Voltar" onclick="window.location.href='feed.html'">arrow_back</i>
+    </div>
+
+    <div class="category-bar">
+      <span class="active">Vídeo</span>
+      <span>Foto</span>
+      <span>Texto</span>
+      <span>Story</span>
+    </div>
+
+    <div class="right-controls" aria-label="Controles Laterais">
+      <i class="material-icons" title="Adicionar texto" onclick="adicionarTexto()">title</i>
+      <i class="material-icons" title="Estilo da Fonte" onclick="alternarFonte()">format_size</i>
+      <div class="music-btn" title="Música" onclick="abrirMusicas()">
+        <span class="material-icons">music_note</span>
+        <div class="music-icon-preview" id="iconeMusica"></div>
+      </div>
+      <i class="material-icons" title="Trocar câmera" onclick="alternarCamera()">flip_camera_android</i>
+      <i class="material-icons" id="flashBtn" title="Flash" onclick="alternarFlash()">flash_on</i>
+      <i class="material-icons" title="Stickers" onclick="abrirStickers()">mood</i>
+      <i class="material-icons" title="Filtro ao vivo" onclick="abrirEfeitos()">filter_alt</i>
+    </div>
+
+    <div id="gravando">● Gravando...</div>
+    <div id="cronometro">00:00</div>
+
+    <div id="textoInserido" contenteditable="true" spellcheck="false" aria-label="Texto editável"></div>
+    <img id="stickerInserido" alt="Sticker inserido" />
+
+    <div id="popupFontes" role="listbox" aria-label="Seleção de estilos de fonte"></div>
+
+    <div class="bottom-bar" aria-label="Barra inferior de controles">
+      <i class="material-icons" title="Efeitos" onclick="abrirEfeitos()">auto_awesome</i>
+      <i class="material-icons" title="Galeria" onclick="escolherVideo()">photo_library</i>
+      <span class="record-btn material-icons" title="Gravar/Parar" onclick="toggleGravacao()">fiber_manual_record</span>
+      <i class="material-icons" title="Cancelar" onclick="apagarSelecionado()">close</i>
+      <i class="material-icons" title="Confirmar" onclick="confirmarPublicacao()">check</i>
+    </div>
+  </div>
+
+  <audio id="audioMusica" preload="auto" muted></audio>
+
+  <script>
+    let cameraFrontal = true;
+    let gravando = false;
+    let cronometroInterval;
+    let segundos = 0;
+    let flashAtivo = false;
+
+    const texto = document.getElementById("textoInserido");
+    const sticker = document.getElementById("stickerInserido");
+    const popupFontes = document.getElementById("popupFontes");
+    const cameraView = document.getElementById("cameraView");
+    const flashBtn = document.getElementById("flashBtn");
+
+    // ===== Funções básicas =====
+
+    function abrirMusicas() {
+      sessionStorage.setItem("origemMusica", "video.html");
+      window.location.href = "musicas.html";
+    }
+
+    function abrirStickers() {
+      sessionStorage.setItem("origemSticker", "video.html");
+      window.location.href = "stickers.html";
+    }
+
+    function abrirEfeitos() {
+      sessionStorage.setItem("origemEfeito", "video.html");
+      window.location.href = "efeitos.html";
+    }
+
+    function alternarCamera() {
+      cameraFrontal = !cameraFrontal;
+      // Troca o background simulando câmera frontal/traseira (pode personalizar depois)
+      cameraView.style.backgroundImage = cameraFrontal
+        ? "url('https://via.placeholder.com/600x1200?text=CÂMERA+FRONTAL')"
+        : "url('https://via.placeholder.com/600x1200?text=CÂMERA+TRASEIRA')";
+      // Não mostra alerta como pediu
+    }
+
+    function alternarFlash() {
+      flashAtivo = !flashAtivo;
+      flashBtn.style.color = flashAtivo ? "yellow" : "white";
+    }
+
+    // ===== Texto =====
+
+    function adicionarTexto() {
+      texto.style.display = "block";
+      texto.focus();
+      if (!texto.hasAttribute("data-dragging")) {
+        tornarArrastavel(texto);
+      }
+    }
+
+    function alternarFonte() {
+      if (popupFontes.style.display === "block") {
+        popupFontes.style.display = "none";
+        return;
+      }
+      const estilos = [
+        "Arial", "Courier New", "Georgia", "Verdana", "Impact",
+        "Times New Roman", "Comic Sans MS", "Lucida Console", "Trebuchet MS", "Tahoma"
+      ];
+      popupFontes.innerHTML = "<div style='padding:5px; color:white; font-weight:bold;'>Estilos</div>";
+      estilos.forEach(fonte => {
+        const div = document.createElement("div");
+        div.textContent = fonte;
+        div.style.fontFamily = fonte;
+        div.tabIndex = 0;
+        div.setAttribute('role','option');
+        div.style.padding = "5px 10px";
+        div.style.cursor = "pointer";
+        div.style.color = "white";
+        div.onmouseover = () => div.style.background = "#333";
+        div.onmouseout = () => div.style.background = "transparent";
+        div.onclick = () => {
+          texto.style.fontFamily = fonte;
+          popupFontes.style.display = "none";
+          texto.focus();
+        };
+        div.onkeydown = (e) => {
+          if(e.key === "Enter" || e.key === " "){
+            e.preventDefault();
+            texto.style.fontFamily = fonte;
+            popupFontes.style.display = "none";
+            texto.focus();
+          }
+        };
+        popupFontes.appendChild(div);
+      });
+      popupFontes.style.display = "block";
+    }
+
+    // Fecha popup ao clicar fora ou escolher estilo
+    window.addEventListener("click", function(e) {
+      if (!popupFontes.contains(e.target) && e.target !== document.querySelector("[title='Estilo da Fonte']")) {
+        popupFontes.style.display = "none";
+      }
+    });
+
+    // ===== Drag & Drop =====
+    function tornarArrastavel(el) {
+      if(el.getAttribute("data-dragging")) return;
+      el.setAttribute("data-dragging", "true");
+      let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+      el.style.position = "absolute";
+
+      el.onmousedown = dragMouseDown;
+      el.ontouchstart = dragTouchStart;
+
+      function dragMouseDown(e) {
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+      }
+
+      function elementDrag(e) {
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        el.style.top = (el.offsetTop - pos2) + "px";
+        el.style.left = (el.offsetLeft - pos1) + "px";
+      }
+
+      function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+      }
+
+      function dragTouchStart(e) {
+        if (e.touches.length !== 1) return;
+        pos3 = e.touches[0].clientX;
+        pos4 = e.touches[0].clientY;
+        document.ontouchend = closeDragElementTouch;
+        document.ontouchmove = elementDragTouch;
+      }
+
+      function elementDragTouch(e) {
+        if (e.touches.length !== 1) return;
+        pos1 = pos3 - e.touches[0].clientX;
+        pos2 = pos4 - e.touches[0].clientY;
+        pos3 = e.touches[0].clientX;
+        pos4 = e.touches[0].clientY;
+        el.style.top = (el.offsetTop - pos2) + "px";
+        el.style.left = (el.offsetLeft - pos1) + "px";
+      }
+
+      function closeDragElementTouch() {
+        document.ontouchend = null;
+        document.ontouchmove = null;
+      }
+    }
+
+    // ===== Stickers =====
+    window.onload = () => {
+      // Música
+      const capa = sessionStorage.getItem("capaMusica");
+      const audioSrc = sessionStorage.getItem("audioMusica");
+      if (capa && audioSrc) {
+        document.getElementById("iconeMusica").style.backgroundImage = `url('${capa}')`;
+        const audio = document.getElementById("audioMusica");
+        audio.src = audioSrc;
+        audio.volume = 0;
+        audio.muted = true;
+        audio.play().catch(() => {});
+      }
+      // Sticker
+      const stickerURL = sessionStorage.getItem("stickerSelecionado");
+      if (stickerURL) {
+        sticker.src = stickerURL;
+        sticker.style.display = "block";
+        tornarArrastavel(sticker);
+      }
+      // Filtro
+      const efeito = sessionStorage.getItem("efeitoSelecionado");
+      if (efeito) {
+        cameraView.style.filter = efeito;
+      }
+    };
+
+    // ===== Gravação =====
+
+    function toggleGravacao() {
+      if(gravando){
+        pararGravacao();
+      } else {
+        iniciarGravacao();
+      }
+    }
+
+    function iniciarGravacao() {
+      gravando = true;
+      segundos = 0;
+      document.getElementById("gravando").style.display = "block";
+      document.getElementById("cronometro").style.display = "block";
+      atualizarCronometro();
+      cronometroInterval = setInterval(() => {segundos++;
+      if (segundos >= 3600) { // Máximo 1 hora
+        pararGravacao();
+        return;
+      }
+      atualizarCronometro();
+    }, 1000);
+  }
+
+  function atualizarCronometro() {
+    let min = Math.floor(segundos / 60).toString().padStart(2, '0');
+    let seg = (segundos % 60).toString().padStart(2, '0');
+    document.getElementById("cronometro").textContent = `${min}:${seg}`;
+  }
+
+  function pararGravacao() {
+    clearInterval(cronometroInterval);
+    gravando = false;
+    document.getElementById("gravando").style.display = "none";
+    document.getElementById("cronometro").style.display = "block"; // mantém o tempo no topo após parar
+  }
+
+  // Apaga texto ou sticker visível
+  function apagarSelecionado() {
+    if (texto.style.display === "block" && document.activeElement === texto) {
+      texto.style.display = "none";
+    } else if (sticker.style.display === "block") {
+      sticker.style.display = "none";
+      sessionStorage.removeItem("stickerSelecionado");
+    }
+  }
+
+  // Confirmar e salvar dados na sessão para próxima página
+  function confirmarPublicacao() {
+    if (!gravando && !sessionStorage.getItem("videoEscolhido")) {
+      alert("Grave um vídeo ou selecione um vídeo antes de continuar.");
+      return;
+    }
+    pararGravacao();
+
+    if (texto.style.display === "block") {
+      sessionStorage.setItem("textoConteudo", texto.innerText);
+      sessionStorage.setItem("textoTop", texto.style.top);
+      sessionStorage.setItem("textoLeft", texto.style.left);
+      sessionStorage.setItem("textoFonte", texto.style.fontFamily);
+    }
+
+    if (sticker.style.display === "block") {
+      sessionStorage.setItem("stickerTop", sticker.style.top);
+      sessionStorage.setItem("stickerLeft", sticker.style.left);
+    }
+
+    window.location.href = "publicar1.html";
+  }
+
+  // Permite editar texto ao clicar nele (já contenteditable)
+  texto.addEventListener("click", () => {
+    texto.focus();
+  });
+
+  // Fecha popup fonte ao pressionar Esc
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      popupFontes.style.display = "none";
+    }
+  });
+  </script>
+</body>
+</html>

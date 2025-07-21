@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Pesquisar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #111;
+      padding: 12px 16px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 10;
+      border-bottom: 1px solid #222;
+    }
+
+    header h2 {
+      font-size: 16px;
+      margin-left: 10px;
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background: #222;
+      padding: 10px 14px;
+      margin-top: 50px;
+      position: fixed;
+      width: 100%;
+      top: 50px;
+      z-index: 9;
+    }
+
+    .search-bar input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 14px;
+      margin-left: 10px;
+    }
+
+    .categories {
+      display: flex;
+      overflow-x: auto;
+      padding: 10px;
+      background: #111;
+      position: fixed;
+      top: 100px;
+      width: 100%;
+      z-index: 8;
+      border-bottom: 1px solid #222;
+    }
+
+    .categories span {
+      background: #222;
+      color: #ccc;
+      padding: 6px 12px;
+      margin-right: 10px;
+      border-radius: 20px;
+      font-size: 13px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .content {
+      margin-top: 140px;
+      padding: 10px;
+      height: calc(100vh - 140px);
+      overflow-y: auto;
+    }
+
+    .item {
+      background: #1a1a1a;
+      margin-bottom: 12px;
+      padding: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .item img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 6px;
+    }
+
+    .item h4 {
+      margin: 0;
+      font-size: 14px;
+      color: #fff;
+    }
+
+    .item p {
+      font-size: 12px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div onclick="history.back()">
+    <span class="material-icons">arrow_back</span>
+  </div>
+  <h2>Pesquisar</h2>
+</header>
+
+<div class="search-bar">
+  <span class="material-icons">search</span>
+  <input type="text" id="searchInput" placeholder="Pesquisar..." oninput="buscar()">
+</div>
+
+<div class="categories" id="categories" style="display: none;">
+  <span>Vídeos</span>
+  <span>Usuários</span>
+  <span>Fotos</span>
+  <span>Músicas</span>
+  <span>Textos</span>
+  <span>Destaques</span>
+  <span>Recentes</span>
+</div>
+
+<div class="content" id="results"></div>
+
+<script>
+  const resultados = document.getElementById("results");
+  const categorias = document.getElementById("categories");
+
+  function buscar() {
+    const texto = document.getElementById("searchInput").value.toLowerCase();
+    resultados.innerHTML = "";
+    categorias.style.display = texto.length > 0 ? "flex" : "none";
+
+    if (texto.trim() === "") return;
+
+    // Exemplo de resultados simulados
+    const dados = [
+      { tipo: "usuario", nome: "João Salvador", desc: "Perfil oficial", link: "usuario.html" },
+      { tipo: "video", nome: "João dançando", desc: "Vídeo popular", img: "video1.jpg", link: "reall.html" },
+      { tipo: "foto", nome: "Selfie João", desc: "Nova publicação", img: "foto1.jpg", link: "reall.html" },
+      { tipo: "texto", nome: "Pensamento do dia", desc: "Texto postado", link: "reall.html" }
+    ];
+
+    dados.filter(d => d.nome.toLowerCase().includes(texto)).forEach(d => {
+      const div = document.createElement("div");
+      div.className = "item";
+      div.onclick = () => location.href = d.link;
+
+      if (d.img) {
+        div.innerHTML = `<img src="${d.img}" alt="${d.nome}">
+                         <h4>${d.nome}</h4><p>${d.desc}</p>`;
+      } else {
+        div.innerHTML = `<h4>${d.nome}</h4><p>${d.desc}</p>`;
+      }
+
+      resultados.appendChild(div);
+    });
+  }
+</script>
+
+</body>
+</html>

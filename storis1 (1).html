@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Story com Reação</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <style>
+    * { margin:0; padding:0; box-sizing: border-box; }
+    body, html {
+      width: 100%; height: 100%;
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+      user-select:none;
+    }
+    .story-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    video, img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .progress-bar {
+      position: absolute;
+      top: 0; left: 0;
+      height: 3px;
+      background: #1e90ff;
+      width: 0%;
+      z-index: 10;
+      transition: width linear;
+    }
+    .top-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 50px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: #fff;
+      font-weight: 600;
+      z-index: 11;
+      font-size: 16px;
+      user-select:none;
+    }
+    /* Ondas musicais simples */
+    .audio-wave {
+      width: 60px;
+      height: 20px;
+      display: flex;
+      gap: 4px;
+      align-items: flex-end;
+      margin-left: 8px;
+    }
+    .audio-wave span {
+      display: block;
+      width: 4px;
+      background: #1e90ff;
+      border-radius: 2px;
+      animation: wave 1.2s infinite ease-in-out;
+      transform-origin: bottom center;
+    }
+    .audio-wave span:nth-child(1) { animation-delay: 0s; height: 6px; }
+    .audio-wave span:nth-child(2) { animation-delay: 0.15s; height: 12px; }
+    .audio-wave span:nth-child(3) { animation-delay: 0.3s; height: 18px; }
+    .audio-wave span:nth-child(4) { animation-delay: 0.45s; height: 14px; }
+    .audio-wave span:nth-child(5) { animation-delay: 0.6s; height: 8px; }
+    @keyframes wave {
+      0%, 100% { transform: scaleY(0.4); opacity: 0.7; }
+      50% { transform: scaleY(1.0); opacity: 1; }
+    }
+
+    .user-info {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      z-index: 11;
+    }
+    .user-info img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2px solid #1e90ff;
+      object-fit: cover;
+    }
+    .user-info span {
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .fechar {
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      font-size: 28px;
+      cursor: pointer;
+      z-index: 11;
+      color: #fff;
+      user-select:none;
+    }
+    .acoes {
+      position: absolute;
+      bottom: 85px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      z-index: 11;
+    }
+    .acoes i {
+      font-size: 36px;
+      cursor: pointer;
+      color: #fff;
+      user-select:none;
+      transition: transform 0.15s ease;
+    }
+    .acoes i:active {
+      transform: scale(1.3);
+    }
+    /* Burst corações */
+    #burstContainer {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      overflow: visible;
+      z-index: 20;
+    }
+    .burst-heart {
+      position: absolute;
+      color: #ff1744;
+      font-size: 48px;
+      opacity: 0;
+      animation: burstAnim 1s forwards;
+      user-select:none;
+      pointer-events:none;
+      will-change: transform, opacity;
+    }
+    @keyframes burstAnim {
+      0% {
+        transform: scale(0.5) translateY(0);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1.8) translateY(-100px);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="story-container" id="storyContainer">
+  <!-- Usar video ou img -->
+  <video id="storyVideo" autoplay muted playsinline style="display:none;"></video>
+  <img id="storyImg" src="story1.jpg" alt="Story" style="display:block; object-fit:cover; width:100%; height:100%" />
+
+  <div class="progress-bar" id="progressBar"></div>
+
+  <div class="top-bar" aria-label="Informações da música">
+    Música Exemplo - Artista
+    <div class="audio-wave" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <div class="user-info" onclick="irParaPerfil()">
+    <img src="perfil1.jpg" alt="Usuário" />
+    <span>João Salvador</span>
+  </div>
+
+  <div class="fechar" onclick="fecharStory()">✕</div>
+
+  <div class="acoes">
+    <i class="material-icons" id="iconeReacao" title="Reagir">favorite</i>
+    <i class="material-icons" id="iconePartilha" title="Partilhar">send</i>
+  </div>
+
+  <div id="burstContainer"></div>
+</div>
+
+<script>
+  const stories = [
+    { type: 'image', src: 'story1.jpg' },
+    { type: 'video', src: 'story2.mp4' },
+    { type: 'image', src: 'story3.jpg' },
+  ];
+
+  let currentIndex = 0;
+  let progressBar = document.getElementById("progressBar");
+  let storyImg = document.getElementById("storyImg");
+  let storyVideo = document.getElementById("storyVideo");
+  let burstContainer = document.getElementById("burstContainer");
+  let intervalId = null;
+  let paused = false;
+  let pauseStart = null;
+  let totalPausedTime = 0;
+
+  function irParaPerfil() {
+    window.location.href = "usuario.html";
+  }
+
+  function fecharStory() {
+    window.location.href = "feed.html";
+  }
+
+  function partilhar() {
+    window.location.href = "partilhar.html";
+  }
+
+  function carregarStory(index) {
+    if (index >= stories.length) {
+      fecharStory();
+      return;
+    }
+
+    totalPausedTime = 0;
+    paused = false;
+    pauseStart = null;
+
+    progressBar.style.transition = "none";
+    progressBar.style.width = "0%";
+
+    const story = stories[index];
+
+    if (story.type === 'image') {
+      storyVideo.style.display = "none";
+      storyVideo.pause();
+
+      storyImg.style.display = "block";
+      storyImg.src = story.src;
+
+      iniciarProgressBar(5000);
+    } else if (story.type === 'video') {
+      storyImg.style.display = "none";
+
+      storyVideo.style.display = "block";
+      storyVideo.src = story.src;
+      storyVideo.currentTime = 0;
+      storyVideo.muted = true;
+      storyVideo.play();
+
+      storyVideo.onloadedmetadata = () => {
+        iniciarProgressBar(storyVideo.duration * 1000);
+      }
+    }
+  }
+
+  function iniciarProgressBar(duracao) {
+    progressBar.style.transition = `width ${duracao}ms linear`;
+    progressBar.style.width = "100%";
+
+    clearTimeout(intervalId);
+    intervalId = setTimeout(() => {
+      currentIndex++;
+      carregarStory(currentIndex);
+    }, duracao);
+  }
+
+  // Função burst dos corações animados
+  function burstCorações() {
+    for(let i=0; i<8; i++) {
+      const heart = document.createElement("div");
+      heart.textContent = "❤️";
+      heart.className = "burst-heart";
+
+      // Posicionamento aleatório (entre 20% e 80% horizontal, 60% e 90% vertical)
+      heart.style.left = (20 + Math.random() * 60) + "%";
+      heart.style.top = (60 + Math.random() * 30) + "%";
+
+      // Delay para os corações se espalharem
+      heart.style.animationDelay = (i * 0.12) + "s";
+
+      burstContainer.appendChild(heart);
+
+      heart.addEventListener("animationend", () => {
+        heart.remove();
+      });
+    }
+  }
+
+  // Controla toque longo para pausar/retomar o story (imagem ou vídeo)
+  let touchTimer = null;
+
+  function touchStartHandler(e) {
+    e.preventDefault();
+    if (paused) return;
+    paused = true;
+
+    if (storyVideo.style.display === "block") {
+      storyVideo.pause();
+    }
+
+    // Pausar o progresso
+    const computedStyle = window.getComputedStyle(progressBar);
+    const widthPx = parseFloat(computedStyle.width);
+    const parentWidth = progressBar.parentElement.offsetWidth;
+    const percentDone = widthPx / parentWidth;
+
+    // Calcula o tempo restante
+    const duration = parseFloat(progressBar.style.transitionDuration) * 1000 || 5000;
+    clearTimeout(intervalId);
+
+    // Guardar quando pausou para ajustar depois
+    pauseStart = Date.now();
+
+    progressBar.style.transition = "none";
+    progressBar.style.width = (percentDone * 100) + "%";
+  }
+
+  function touchEndHandler(e) {
+    e.preventDefault();
+    if (!paused) return;
+    paused = false;
+
+    if (storyVideo.style.display === "block") {
+      storyVideo.play();
+    }
+
+    if (pauseStart !== null) {
+      const pausedDuration = Date.now() - pauseStart;
+      totalPausedTime += pausedDuration;
+      pauseStart = null;
+    }
+
+    // Reiniciar progresso com tempo restante
+    const computedStyle = window.getComputedStyle(progressBar);
+    const widthPx = parseFloat(computedStyle.width);
+    const parentWidth = progressBar.parentElement.offsetWidth;
+    const percentDone = widthPx / parentWidth;
+
+    // Duração total que o progress bar tinha
+    const totalDuration = storyVideo.style.display === "block" ? (storyVideo.duration * 1000) : 5000;
+
+    // Calcular tempo restante considerando pausas
+    const elapsed = totalDuration * percentDone;
+    const remaining = totalDuration - elapsed;
+
+    // Ajusta o progress bar e timeout
+    progressBar.style.transition = `width ${remaining}ms linear`;
+    progressBar.style.width = "100%";
+
+    clearTimeout(intervalId);
+    intervalId = setTimeout(() => {
+      currentIndex++;
+      carregarStory(currentIndex);
+    }, remaining);
+  }
+
+  // Burst de corações no clique do ícone de reação
+  document.getElementById("iconeReacao").addEventListener("click", () => {
+    burstCorações();
+  });
+
+  // Clique no ícone de partilha
+  document.getElementById("iconePartilha").addEventListener("click", () => {
+    partilhar();
+  });
+
+  // Clique no perfil
+  document.querySelector(".user-info").addEventListener("click", () => {
+    irParaPerfil();
+  });
+
+  // Fechar story
+  document.querySelector(".fechar").addEventListener("click", () => {
+    fecharStory();
+  });
+
+  // Eventos para toque longo pausar/retomar
+  const storyContainer = document.getElementById("storyContainer");
+  storyContainer.addEventListener("touchstart", touchStartHandler, { passive: false });
+  storyContainer.addEventListener("touchend", touchEndHandler, { passive: false });
+  storyContainer.addEventListener("mousedown", touchStartHandler); // Para desktop testar com mouse
+  storyContainer.addEventListener("mouseup", touchEndHandler);
+
+  // Carrega o primeiro story
+  carregarStory(currentIndex);
+</script>
+
+</body>
+</html>

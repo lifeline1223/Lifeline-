@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Publicar Texto - LIFELINE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding-bottom: 80px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #111;
+      padding: 12px 16px;
+      border-bottom: 1px solid #222;
+    }
+    .header h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+    .dropdown {
+      position: relative;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: #222;
+      min-width: 140px;
+      border: 1px solid #333;
+      z-index: 10;
+      border-radius: 6px;
+    }
+    .dropdown-content div {
+      padding: 10px;
+      color: white;
+      cursor: pointer;
+    }
+    .dropdown-content div:hover {
+      background-color: #333;
+    }
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+    .categories {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 10px 0;
+      border-bottom: 1px solid #222;
+    }
+    .categories span {
+      color: #aaa;
+      cursor: pointer;
+    }
+    .categories .active {
+      color: white;
+      border-bottom: 2px solid white;
+    }
+    .text-container {
+      padding: 20px;
+    }
+    textarea {
+      width: 100%;
+      height: 160px;
+      background: #111;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 16px;
+      resize: none;
+      margin-bottom: 20px;
+    }
+    .side-tools {
+      position: absolute;
+      top: 140px;
+      right: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      z-index: 2;
+    }
+    .music-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: spin 4s linear infinite;
+      cursor: pointer;
+    }
+    .music-icon i {
+      color: white;
+    }
+    .side-tools i {
+      font-size: 22px;
+      background: rgba(255,255,255,0.1);
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0); }
+      100% { transform: rotate(360deg); }
+    }
+    .permissions {
+      padding: 0 20px;
+      margin-top: 40px;
+    }
+    .option {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #222;
+    }
+    .toggle-btn {
+      width: 34px;
+      height: 18px;
+      background: #555;
+      border-radius: 10px;
+      position: relative;
+      cursor: pointer;
+    }
+    .toggle-btn.active {
+      background: #00aaff;
+    }
+    .toggle-btn::after {
+      content: '';
+      width: 16px;
+      height: 16px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 1px;
+      left: 1px;
+      transition: all 0.3s ease;
+    }
+    .toggle-btn.active::after {
+      left: 17px;
+    }
+    .bottom-buttons {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px;
+      background: #111;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      border-top: 1px solid #222;
+    }
+    .bottom-buttons button {
+      padding: 10px 16px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-agendar {
+      background: #444;
+      color: white;
+    }
+    .btn-publicar {
+      background: #00aaff;
+      color: white;
+    }
+
+    /* Popup estilo fonte */
+    .overlay, .popup {
+      display: none;
+      position: fixed;
+      z-index: 10;
+    }
+    .overlay {
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+    }
+    .popup {
+      background: #111;
+      padding: 20px;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 300px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .popup select, .popup button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+    }
+    .popup button {
+      background: #00aaff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <i class="material-icons" onclick="history.back()">arrow_back</i>
+  <h2>Publicar Texto</h2>
+  <div class="dropdown">
+    <i class="material-icons">more_vert</i>
+    <div class="dropdown-content">
+      <div onclick="setVisibilidade('Público')">Público</div>
+      <div onclick="setVisibilidade('Apenas Amigos')">Apenas Amigos</div>
+    </div>
+  </div>
+</div>
+
+<div class="categories">
+  <span class="active">Texto</span>
+  <span>Foto</span>
+  <span>Vídeo</span>
+  <span>Story</span>
+</div>
+
+<div class="text-container">
+  <textarea placeholder="Em que estás a pensar?" id="texto"></textarea>
+</div>
+
+<div class="side-tools">
+  <div class="music-icon" onclick="abrirMusicas()">
+    <i class="material-icons">music_note</i>
+  </div>
+  <i class="material-icons" onclick="abrirPopup()" title="Fonte">style</i>
+  <i class="material-icons" onclick="trocarCorFundo()" title="Fundo">format_color_fill</i>
+</div>
+
+<div class="permissions">
+  <div class="option"><span>Permitir comentários</span><div class="toggle-btn active" onclick="toggle(this)"></div></div>
+  <div class="option"><span>Permitir reações</span><div class="toggle-btn active" onclick="toggle(this)"></div></div>
+  <div class="option"><span>Permitir reutilização do conteúdo</span><div class="toggle-btn" onclick="toggle(this)"></div></div>
+  <div class="option"><span>Ocultar contagem de gostos</span><div class="toggle-btn" onclick="toggle(this)"></div></div>
+  <div class="option"><span>Ocultar contagem de partilhas</span><div class="toggle-btn" onclick="toggle(this)"></div></div>
+</div>
+
+<div class="bottom-buttons">
+  <button class="btn-agendar" onclick="window.location.href='agendar.html'">Agendar</button>
+  <button class="btn-publicar" onclick="publicar()">Publicar</button>
+</div>
+
+<!-- Popup Estilo de Fonte -->
+<div class="overlay" id="overlay" onclick="fecharPopup()"></div>
+<div class="popup" id="popup">
+  <label for="fonteTexto">Escolher fonte:</label>
+  <select id="fonteTexto">
+    <option value="Arial">Arial</option>
+    <option value="Georgia">Georgia</option>
+    <option value="Verdana">Verdana</option>
+    <option value="Courier New">Courier New</option>
+    <option value="Tahoma">Tahoma</option>
+    <option value="Times New Roman">Times New Roman</option>
+  </select>
+  <button onclick="aplicarFonte()">Aplicar</button>
+</div>
+
+<script>
+  const coresFundo = [
+    "#000000", "#FFFF00", "#00FF00", "#FFA500", "#A52A2A",
+    "#800080", "#FF0000", "#008080", "#FFC0CB", "#00CED1",
+    "#FFD700", "#FF69B4", "#4B0082", "#DC143C", "#1E90FF"
+  ];
+  let corAtual = 0;
+
+  function toggle(el) {
+    el.classList.toggle("active");
+  }
+
+  function setVisibilidade(tipo) {
+    sessionStorage.setItem("visibilidadeTexto", tipo);
+    alert("Visibilidade: " + tipo);
+  }
+
+  function abrirMusicas() {
+    sessionStorage.setItem("origemMusica", "textopublicar.html");
+    window.location.href = "musicas.html";
+  }
+
+  function publicar() {
+    const texto = document.getElementById("texto").value;
+    sessionStorage.setItem("textoPublicado", texto);
+    window.location.href = "feed.html";
+  }
+
+  function abrirPopup() {
+    document.getElementById("overlay").style.display = 'block';
+    document.getElementById("popup").style.display = 'block';
+  }
+
+  function fecharPopup() {
+    document.getElementById("overlay").style.display = 'none';
+    document.getElementById("popup").style.display = 'none';
+  }
+
+  function aplicarFonte() {
+    const fonte = document.getElementById("fonteTexto").value;
+    document.getElementById("texto").style.fontFamily = fonte;
+    fecharPopup();
+  }
+
+  function trocarCorFundo() {
+    const textarea = document.getElementById("texto");
+    corAtual = (corAtual + 1) % coresFundo.length;
+    textarea.style.backgroundColor = coresFundo[corAtual];
+  }
+</script>
+
+</body>
+</html>

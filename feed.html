@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LIFELINE - Feed</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      outline: none;
+    }
+    body {
+      margin: 0;
+      background-color: #000;
+      font-family: Arial, sans-serif;
+      color: white;
+      overflow-x: hidden;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: #111;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .top-icons i {
+      font-size: 24px;
+      margin-left: 16px;
+      cursor: pointer;
+    }
+    .stories {
+      display: flex;
+      overflow-x: auto;
+      padding: 8px 10px;
+      border-bottom: 1px solid #333;
+      background-color: #111;
+    }
+    .story {
+      position: relative;
+      width: 60px;
+      margin-right: 10px;
+      text-align: center;
+    }
+    .story img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 2px solid white;
+      object-fit: cover;
+      cursor: pointer;
+    }
+    .plus {
+      position: absolute;
+      top: 40px;
+      right: 3px;
+      background-color: #007bff;
+      border-radius: 50%;
+      font-size: 22px;
+      line-height: 22px;
+      padding: 0 6px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .story div {
+      margin-top: 4px;
+      font-size: 12px;
+    }
+    .feed {
+      height: calc(100vh - 145px);
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+    
+    .post {
+      height: 90vh;
+      width: 100%;
+      position: relative;
+      background: #111 center/cover no-repeat;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    .post video, .post img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .post-content {
+      position: absolute;
+      bottom: 90px;
+      left: 12px;
+      right: 60px;
+      color: white;
+      text-shadow: 0 0 8px rgba(0,0,0,0.8);
+    }
+    .post-user-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .post-user-row img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .post-user-name {
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .follow-btn {
+      background-color: #007bff;
+      border: none;
+      border-radius: 5px;
+      padding: 6px 12px;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      margin-left: auto;
+    }
+    .follow-btn.following {
+      background-color: #555;
+    }
+    .description {
+      font-size: 14px;
+      margin-top: 4px;
+      max-width: 90%;
+      line-height: 1.3;
+    }
+    .reaction-count {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-top: 2px;
+      cursor: pointer;
+    }
+    .music-icon {
+      width: 28px;
+      height: 28px;
+      border: 2px solid white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: white;
+      margin-top: 8px;
+    }
+    .side-icons {
+      position: absolute;
+      bottom: 90px;
+      right: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      text-align: center;
+    }
+    .side-icons i {
+      font-size: 24px;
+      color: white;
+    }
+    .icon-label {
+      font-size: 12px;
+    }
+    .dropdown-options {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.95);
+      display: none;
+      flex-direction: column;
+      padding: 12px;
+      z-index: 999;
+    }
+    .dropdown-option {
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+      border-top: 1px solid #333;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .dropdown-option i {
+      margin-right: 8px;
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 55px;
+      background-color: #111;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid #333;
+    }
+    .bottom-nav i {
+      font-size: 26px;
+      color: white;
+      cursor: pointer;
+    }
+  </style><style>
+  .comentarios {
+    margin-top: 10px;
+    background: #222;
+    padding: 10px;
+    border-radius: 10px;
+  }
+
+  .comentarios input {
+    width: 100%;
+    padding: 6px;
+    border-radius: 5px;
+    border: none;
+    margin-bottom: 10px;
+  }
+
+  .comentario {
+    margin-bottom: 6px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+  }
+
+  .avatar-comentario {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="logo" onclick="location.reload()">LIFELINE</div>
+    <div class="top-icons">
+      <i class="material-icons" onclick="window.location.href='explorar.html'">search</i>
+      <i class="material-icons" onclick="window.location.href='mensagem.html'">chat</i>
+    </div>
+  </header>
+
+  <div class="stories">
+    <div class="story">
+      <img src="https://i.pravatar.cc/100?img=1" onclick="window.location.href='storis.html'">
+      <div class="plus" onclick="event.stopPropagation(); window.location.href='story.html';">+</div>
+      <div>Você</div>
+    </div>
+    <div class="story" onclick="window.location.href='storis1.html'">
+      <img src="https://i.pravatar.cc/100?img=2">
+      <div>Anna</div>
+    </div>
+    <div class="story" onclick="window.location.href='storis1.html'">
+      <img src="https://i.pravatar.cc/100?img=3">
+      <div>Leo</div>
+    </div>
+  </div>
+
+  <div class="feed" id="feed"><!-- POST 1 -->
+  <div class="post" style="background-image: url('https://picsum.photos/500/800?1');" onclick="toggleDropdown(this)">
+    <audio src="audio/audio1.mp3"></audio>
+    <div class="post-content">
+      <div class="post-user-row">
+        <img src="https://i.pravatar.cc/100?img=10" onclick="event.stopPropagation(); window.location.href='usuario.html'">
+        <span class="post-user-name" onclick="event.stopPropagation(); window.location.href='usuario.html'">João Silva</span>
+        <button class="follow-btn" onclick="event.stopPropagation(); toggleFollow(this)">Seguir</button>
+      </div>
+      <div class="description">Post com imagem e som ambiente narrado.</div>
+      <div class="reaction-count" onclick="event.stopPropagation(); window.location.href='reacoes.html'">João e 14.2k reações</div>
+    </div>
+    <div class="side-icons">
+      <div><i class="material-icons" onclick="event.stopPropagation(); toggleReaction(this)">favorite_border</i><div class="icon-label">14.2k</div></div>
+      <div><i class="material-icons" onclick="event.stopPropagation(); window.location.href='comentarios.html'">chat_bubble_outline</i><div class="icon-label">34</div></div>
+      <div><i class="material-icons" onclick="event.stopPropagation(); window.location.href='partilhar.html'">share</i><div class="icon-label">1.2k</div></div>
+      <div class="music-icon" onclick="event.stopPropagation(); window.location.href='musica.html'"><i class="material-icons">music_note</i></div>
+    </div>
+    <div class="dropdown-options">
+      <div class="dropdown-option" onclick="startDownload(this)"><i class="material-icons">download</i><span>Baixar</span></div>
+      <div class="dropdown-option" onclick="saveToProfile(this)"><i class="material-icons">bookmark</i><span>Guardar</span></div>
+      <div class="dropdown-option" onclick="repostContent(this)"><i class="material-icons">repeat</i><span>Republicar</span></div>
+      <div class="dropdown-option" onclick="markAsUninterested(this)"><i class="material-icons">visibility_off</i><span>Sem Interesse</span></div>
+      <div class="dropdown-option" onclick="blockAuthor(this)"><i class="material-icons">block</i><span>Bloquear</span></div>
+    </div>
+  </div>
+
+  <!-- POST 2 -->
+  <div class="post" onclick="toggleDropdown(this)">
+    <video muted autoplay loop playsinline onclick="toggleVideo(this)">
+      <source src="media/video1.mp4" type="video/mp4">
+    </video>
+    <audio src="audio/audio2.mp3"></audio>
+    <div class="post-content">
+      <div class="post-user-row">
+        <img src="https://i.pravatar.cc/100?img=12" onclick="event.stopPropagation(); window.location.href='usuario.html'">
+        <span class="post-user-name" onclick="event.stopPropagation(); window.location.href='usuario.html'">Maria Costa</span>
+        <button class="follow-btn" onclick="event.stopPropagation(); toggleFollow(this)">Seguir</button>
+      </div>
+      <div class="description">Vídeo ao pôr do sol. Som ambiente relaxante.</div>
+      <div class="reaction-count" onclick="event.stopPropagation(); window.location.href='reacoes.html'">Maria e 8.9k reações</div>
+    </div>
+    <div class="side-icons">
+      <div><i class="material-icons" onclick="event.stopPropagation(); toggleReaction(this)">favorite_border</i><div class="icon-label">8.9k</div></div>
+      <div><i class="material-icons" onclick="event.stopPropagation(); window.location.href='comentarios.html'">chat_bubble_outline</i><div class="icon-label">12</div></div>
+      <div><i class="material-icons" onclick="event.stopPropagation(); window.location.href='partilhar.html'">share</i><div class="icon-label">500</div></div>
+      <div class="music-icon" onclick="event.stopPropagation(); window.location.href='musica.html'"><i class="material-icons">music_note</i></div>
+    </div>
+    <div class="dropdown-options">
+      <div class="dropdown-option" onclick="startDownload(this)"><i class="material-icons">download</i><span>Baixar</span></div>
+      <div class="dropdown-option" onclick="saveToProfile(this)"><i class="material-icons">bookmark</i><span>Guardar</span></div>
+      <div class="dropdown-option" onclick="repostContent(this)"><i class="material-icons">repeat</i><span>Republicar</span></div>
+      <div class="dropdown-option" onclick="markAsUninterested(this)"><i class="material-icons">visibility_off</i><span>Sem Interesse</span></div>
+      <div class="dropdown-option" onclick="blockAuthor(this)"><i class="material-icons">block</i><span>Bloquear</span></div>
+    </div>
+  </div>
+
+  <!-- POST 3 -->
+  <div class="post" style="background-image: url('https://picsum.photos/500/800?7');" onclick="toggleDropdown(this)">
+    <audio src="audio/audio7.mp3"></audio>
+    <div class="post-content">
+      <div class="post-user-row">
+        <img src="https://i.pravatar.cc/100?img=22" onclick="event.stopPropagation(); window.location.href='usuario.html'">
+        <span class="post-user-name" onclick="event.stopPropagation(); window.location.href='usuario.html'">Sara Neves</span>
+        <button class="follow-btn" onclick="event.stopPropagation(); toggleFollow(this)">Seguir</button>
+      </div>
+      <div class="description">Tranquilidade entre montanhas e rios.</div>
+      <div class="reaction-count" onclick="event.stopPropagation(); window.location.href='reacoes.html'">Sara e 11.8k reações</div>
+    </div>
+    <div class="side-icons">
+      <div><i class="material-icons" onclick="event.stopPropagation(); toggleReaction(this)">favorite_border</i><div class="icon-label">11.8k</div></div>
+      <div><i class="material-icons" onclick="event.stopPropagation(); window.location.href='comentarios.html'">chat_bubble_outline</i><div class="icon-label">29</div></div>
+      <div><i class="material-icons" onclick="event.stopPropagation(); window.location.href='partilhar.html'">share</i><div class="icon-label">970</div></div>
+      <div class="music-icon" onclick="event.stopPropagation(); window.location.href='musica.html'"><i class="material-icons">music_note</i></div>
+    </div>
+    <div class="dropdown-options">
+      <div class="dropdown-option" onclick="startDownload(this)"><i class="material-icons">file_download</i><span>Baixar</span></div>
+      <div class="dropdown-option" onclick="saveToProfile(this)"><i class="material-icons">bookmark</i><span>Guardar</span></div>
+      <div class="dropdown-option" onclick="repostContent(this)"><i class="material-icons">autorenew</i><span>Republicar</span></div>
+      <div class="dropdown-option" onclick="markAsUninterested(this)"><i class="material-icons">not_interested</i><span>Sem Interesse</span></div>
+      <div class="dropdown-option" onclick="blockAuthor(this)"><i class="material-icons">block</i><span>Bloquear</span></div>
+    </div>
+  </div>
+</div><script>
+  // Alterna o menu dropdown de baixo para cima
+  function toggleDropdown(postElement) {
+    const allDropdowns = document.querySelectorAll('.dropdown-options');
+    allDropdowns.forEach(drop => drop.style.display = 'none');
+    const dropdown = postElement.querySelector('.dropdown-options');
+    dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+  }
+
+  // Seguir/Deixar de seguir
+  function toggleFollow(button) {
+    button.classList.toggle('following');
+    button.innerText = button.classList.contains('following') ? 'Seguindo' : 'Seguir';
+  }
+
+  // Curtir / Descurtir
+  function toggleReaction(icon) {
+    const countLabel = icon.nextElementSibling;
+    let count = parseInt(countLabel.innerText.replace(/[^\d]/g, ''));
+    const isActive = icon.innerText === 'favorite';
+
+    if (isActive) {
+      icon.innerText = 'favorite_border';
+      icon.style.color = 'white';
+      count = Math.max(count - 1, 0);
+    } else {
+      icon.innerText = 'favorite';
+      icon.style.color = '#ff4081';
+      count += 1;
+    }
+
+    countLabel.innerText = count.toLocaleString();
+  }
+
+  // Guardar post
+  function saveToProfile(option) {
+    const post = option.closest('.post');
+    const bg = post.style.backgroundImage || post.querySelector('video')?.src;
+    let saved = JSON.parse(localStorage.getItem('savedPosts') || '[]');
+    if (!saved.includes(bg)) {
+      saved.push(bg);
+      localStorage.setItem('savedPosts', JSON.stringify(saved));
+      alert('Post guardado no seu perfil!');
+    }
+  }
+
+  // Repostar
+  function repostContent(option) {
+    alert('Conteúdo republicado no seu feed!');
+  }
+
+  // Baixar conteúdo
+  function startDownload(option) {
+    alert('Iniciando download...');
+  }
+
+  // Marcar como sem interesse
+  function markAsUninterested(option) {
+    const post = option.closest('.post');
+    post.style.display = 'none';
+    const id = post.style.backgroundImage;
+    let hidden = JSON.parse(localStorage.getItem('uninterested') || '[]');
+    hidden.push(id);
+    localStorage.setItem('uninterested', JSON.stringify(hidden));
+  }
+
+  // Bloquear autor
+  function blockAuthor(option) {
+    const post = option.closest('.post');
+    const name = post.querySelector('.post-user-name')?.innerText || '';
+    post.style.display = 'none';
+    let blocked = JSON.parse(localStorage.getItem('blockedAuthors') || '[]');
+    if (!blocked.includes(name)) {
+      blocked.push(name);
+      localStorage.setItem('blockedAuthors', JSON.stringify(blocked));
+      alert(`Autor ${name} bloqueado.`);
+    }
+  }
+
+  // Alternar som de vídeo ao clicar (opcional)
+  function toggleVideo(video) {
+    video.muted = !video.muted;
+  }
+
+  // Fechar dropdown ao clicar fora
+  window.addEventListener('click', function (e) {
+    const isDropdown = e.target.closest('.dropdown-options');
+    const isPost = e.target.closest('.post');
+    if (!isDropdown && !isPost) {
+      document.querySelectorAll('.dropdown-options').forEach(d => d.style.display = 'none');
+    }
+  });
+</script>
+</script>
+
+<div class="bottom-nav">
+  <i class="material-icons" onclick="window.location.href='feed.html'">home</i>
+  <i class="material-icons" onclick="window.location.href='conferente.html'">video_call</i>
+  <i class="material-icons" onclick="window.location.href='video.html'">add_circle_outline</i>
+  <i class="material-icons" onclick="window.location.href='notificacoes.html'">notifications</i>
+  <i class="material-icons" onclick="window.location.href='perfil.html'">person</i>
+</div>
+
+<script>
+  // Fecha todos os dropdowns abertos
+  function closeAllDropdowns() {
+    document.querySelectorAll('.dropdown-options').forEach(dropdown => {
+      dropdown.style.display = 'none';
+    });
+  }
+
+  // Abre ou fecha o dropdown do post clicado
+  function toggleDropdown(postElement) {
+    const dropdown = postElement.querySelector('.dropdown-options');
+    if (!dropdown) return;
+
+    if (dropdown.style.display === 'flex') {
+      dropdown.style.display = 'none';
+    } else {
+      closeAllDropdowns();
+      dropdown.style.display = 'flex';
+    }
+  }
+
+  // Alterna seguir/deixar de seguir no botão
+  function toggleFollow(button) {
+    if (button.classList.contains('following')) {
+      button.classList.remove('following');
+      button.textContent = 'Seguir';
+    } else {
+      button.classList.add('following');
+      button.textContent = 'Seguindo';
+    }
+  }
+
+  // Alterna ícone de reação entre border e cheio
+  function toggleReaction(iconElement) {
+    if (iconElement.textContent === 'favorite_border') {
+      iconElement.textContent = 'favorite';
+      iconElement.style.color = '#e0245e'; // vermelho curtir
+      // Aqui poderia incrementar contador, etc
+    } else {
+      iconElement.textContent = 'favorite_border';
+      iconElement.style.color = 'white';
+      // Aqui poderia decrementar contador, etc
+    }
+  }
+
+  // Play/Pause vídeo clicando nele
+  function toggleVideo(videoElement) {
+    if (videoElement.paused) {
+      videoElement.play();
+    } else {
+      videoElement.pause();
+    }
+  }
+
+  // Fecha dropdown ao clicar fora
+  document.body.addEventListener('click', (e) => {
+    if (!e.target.closest('.post')) {
+      closeAllDropdowns();
+    }
+  });
+<div id="stories" style="display:flex; overflow-x:auto; padding:10px; border-bottom:1px solid #ccc; margin-bottom:10px;"></div>
+
+<div id="feed">Carregando postagens...</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+  // --- Configurações Supabase ---
+  const supabaseUrl = 'https://wjstmoylolxmsrjubcjg.supabase.co'
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indqc3Rtb3lsb2x4bXNyanViY2pnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2NTg1OTYsImV4cCI6MjA2ODIzNDU5Nn0._q0i0BqKNfwAFLtzsl3AZ5GOy2cRsRYi_lzzuKWOoZU'
+
+  const supabase = createClient(supabaseUrl, supabaseKey)
+
+  // --- Configurações Firebase ---
+  const firebaseConfig = {
+    apiKey: "SUA_APIKEY",
+    authDomain: "SEU_AUTHDOMAIN",
+    projectId: "SEU_PROJECT_ID",
+    storageBucket: "SEU_BUCKET",
+    messagingSenderId: "SEU_MESSAGING_ID",
+    appId: "SEU_APP_ID"
+  }
+
+  firebase.initializeApp(firebaseConfig)
+  const firestore = firebase.firestore()
+
+  // Estado das reações (local, sincronizado dos dois DB)
+  const reacoesPosts = {}
+
+  async function carregarStories() {
+    const storiesData = [
+      { id: 1, usuario: 'Ana', avatar: 'https://i.pravatar.cc/60?img=11' },
+      { id: 2, usuario: 'Carlos', avatar: 'https://i.pravatar.cc/60?img=12' },
+      { id: 3, usuario: 'Marina', avatar: 'https://i.pravatar.cc/60?img=13' },
+      { id: 4, usuario: 'João', avatar: 'https://i.pravatar.cc/60?img=14' },
+      { id: 5, usuario: 'Lúcia', avatar: 'https://i.pravatar.cc/60?img=15' },
+    ]
+
+    const storiesDiv = document.getElementById('stories')
+    storiesDiv.innerHTML = ''
+    storiesData.forEach(story => {
+      const s = document.createElement('div')
+      s.style = 'text-align:center; margin-right: 15px; cursor:pointer;'
+      s.innerHTML = `
+        <img src="${story.avatar}" style="width:60px; height:60px; border-radius:50%; border: 2px solid #007bff;" />
+        <div style="font-size:12px; margin-top: 4px;">${story.usuario}</div>
+      `
+      storiesDiv.appendChild(s)
+    })
+  }
+
+  async function carregarReacoesSupabase() {
+    const { data, error } = await supabase
+      .from('reacoes')
+      .select('*')
+    if (error) {
+      console.error('Erro ao carregar reações do Supabase', error)
+      return
+    }
+    data.forEach(r => {
+      reacoesPosts[r.post_id] = r.emoji
+    })
+  }
+
+  async function carregarReacoesFirebase() {
+    try {
+      const snapshot = await firestore.collection('reacoes').get()
+      snapshot.forEach(doc => {
+        const data = doc.data()
+        reacoesPosts[doc.id] = data.emoji
+      })
+    } catch(e) {
+      console.error('Erro ao carregar reações do Firebase', e)
+    }
+  }
+
+  async function salvarReacaoSupabase(postId, emoji) {
+    // Verifica se já tem reacao para esse post (update), senão insere (insert)
+    const { data: existe, error: errBusca } = await supabase
+      .from('reacoes')
+      .select('id')
+      .eq('post_id', postId)
+      .limit(1)
+      .single()
+
+    if (errBusca && !errBusca.message.includes('Results contain 0 rows')) {
+      console.error('Erro buscando reacao no supabase:', errBusca)
+      return
+    }
+
+    if (existe && existe.id) {
+      // update
+      const { error: errUpdate } = await supabase
+        .from('reacoes')
+        .update({ emoji })
+        .eq('id', existe.id)
+      if (errUpdate) console.error('Erro atualizando reacao no supabase:', errUpdate)
+    } else {
+      // insert
+      const { error: errInsert } = await supabase
+        .from('reacoes')
+        .insert([{ post_id: postId, emoji }])
+      if (errInsert) console.error('Erro inserindo reacao no supabase:', errInsert)
+    }
+  }
+
+  async function salvarReacaoFirebase(postId, emoji) {
+    try {
+      await firestore.collection('reacoes').doc(postId).set({ emoji })
+    } catch(e) {
+      console.error('Erro ao salvar reacao no Firebase', e)
+    }
+  }
+
+  async function carregarPostagens() {
+    const { data, error } = await supabase
+      .from('postagens')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('Erro ao buscar postagens:', error)
+      return
+    }
+
+    // Carrega reações dos dois bancos antes de montar o feed
+    await Promise.all([carregarReacoesSupabase(), carregarReacoesFirebase()])
+
+    const feed = document.getElementById('feed')
+    feed.innerHTML = ''
+
+    data.forEach(post => {
+      const emojiReacao = reacoesPosts[post.id] || ''
+
+      const div = document.createElement('div')
+      div.innerHTML = `
+        <div class="post" style="margin: 10px 0; padding: 10px; border: 1px solid #ccc; border-radius: 10px;">
+          <img src="${post.avatar || 'default-avatar.png'}" class="avatar" style="width: 40px; height: 40px; border-radius: 50%;" />
+          <strong>${post.usuario || 'Anônimo'}</strong>
+          <p>${post.texto || ''}</p>
+          ${post.imagem ? `<img src="${post.imagem}" class="post-img" style="width: 100%; margin-top: 10px; border-radius: 10px;" />` : ''}
+
+          <!-- Reações -->
+          <div style="margin-top: 10px;">
+            <button onclick="mostrarEmojis('${post.id}')" style="cursor:pointer;">
+              Reagir ${emojiReacao}
+            </button>
+            <div id="emojis-${post.id}" style="display:none; margin-top: 5px;">
+              ${['👍','❤️','😂','😮','😢','👏'].map(emoji => `
+                <span style="font-size: 20px; margin-right: 8px; cursor: pointer;" onclick="adicionarReacao('${post.id}', '${emoji}')">${emoji}</span>
+              `).join('')}
+            </div>
+            <button onclick="compartilharPost('${post.id}')" style="margin-left: 10px; cursor:pointer;">Compartilhar</button>
+          </div>
+
+          <!-- Comentários -->
+          <div class="comentarios" style="margin-top: 10px;">
+            <input 
+              type="text" 
+              placeholder="Comente aqui..." 
+              onkeydown="if(event.key==='Enter') comentar('${post.id}', this.value)" 
+              style="width: 100%; padding: 5px; margin-bottom: 5px;"
+            />
+            <div id="comentarios-${post.id}" class="area-comentarios">Carregando comentários...</div>
+          </div>
+        </div>
+      `
+      feed.appendChild(div)
+      carregarComentarios(post.id)
+    })
+  }
+
+  window.mostrarEmojis = function(postId) {
+    const div = document.getElementById(`emojis-${postId}`)
+    div.style.display = div.style.display === 'none' ? 'block' : 'none'
+  }
+
+  window.adicionarReacao = async function(postId, emoji) {
+    reacoesPosts[postId] = emoji
+    await Promise.all([
+      salvarReacaoSupabase(postId, emoji),
+      salvarReacaoFirebase(postId, emoji)
+    ])
+    carregarPostagens()
+  }
+
+  window.compartilharPost = function(postId) {
+    const urlPost = `${window.location.origin}?post=${postId}`
+    navigator.clipboard.writeText(urlPost)
+      .then(() => alert('Link copiado para a área de transferência!'))
+      .catch(() => alert('Não foi possível copiar o link.'))
+  }
+
+  window.comentar = async function comentar(postId, texto) {
+    if (!texto) return
+    const { error } = await supabase.from('comentarios').insert([
+      {
+        post_id: postId,
+        usuario: 'Usuário Teste',
+        avatar: 'https://i.pravatar.cc/150?img=1',
+        texto: texto
+      }
+    ])
+    if (error) {
+      console.error('Erro ao comentar:', error)
+      return
+    }
+    carregarComentarios(postId)
+  }
+
+  async function carregarComentarios(postId) {
+    const { data, error } = await supabase
+      .from('comentarios')
+      .select('*')
+      .eq('post_id', postId)
+      .order('created_at', { ascending: true })
+
+    const div = document.getElementById(`comentarios-${postId}`)
+    div.innerHTML = ''
+
+    if (error) {
+      div.innerHTML = '<p>Erro ao carregar comentários</p>'
+      return
+    }
+
+    data.forEach(com => {
+      div.innerHTML += `
+        <div class="comentario" style="margin: 5px 0; padding-left: 5px;">
+          <img src="${com.avatar}" class="avatar-comentario" style="width: 25px; height: 25px; border-radius: 50%; vertical-align: middle;" />
+          <strong style="margin-left: 5px;">${com.usuario}:</strong> ${com.texto}
+        </div>
+      `
+    })
+  }
+
+  // Inicializa stories e feed
+  carregarStories()
+  carregarPostagens()
+</script>
+</body>
+</html>

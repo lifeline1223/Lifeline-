@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Sacar Dinheiro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+    label {
+      font-size: 14px;
+      display: block;
+      margin: 10px 0 5px;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+    }
+    button {
+      background: #1e90ff;
+      color: white;
+      border: none;
+      padding: 14px;
+      width: 100%;
+      border-radius: 8px;
+      font-size: 15px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #007bff;
+    }
+    .extra-fields {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Sacar Dinheiro</h1>
+
+  <label for="valor">Valor (€)</label>
+  <input type="number" id="valor" placeholder="Digite o valor a sacar">
+
+  <label for="metodo">Método de Pagamento</label>
+  <select id="metodo" onchange="mostrarCamposAdicionais()">
+    <option value="">Selecione...</option>
+    <option value="paypal">PayPal</option>
+    <option value="cartao">Cartão Visa</option>
+    <option value="banco">Transferência Bancária</option>
+  </select>
+
+  <div class="extra-fields" id="camposExtras"></div>
+
+  <button onclick="confirmarSaque()">Confirmar Saque</button>
+
+  <script>
+    function mostrarCamposAdicionais() {
+      const metodo = document.getElementById("metodo").value;
+      const campos = document.getElementById("camposExtras");
+      campos.innerHTML = "";
+
+      if (!metodo) return;
+
+      // Nome é sempre obrigatório
+      campos.innerHTML += `
+        <label for="nome">Nome Completo</label>
+        <input type="text" id="nome" placeholder="Digite seu nome completo">
+      `;
+
+      if (metodo === "paypal") {
+        campos.innerHTML += `
+          <label for="email">Email do PayPal</label>
+          <input type="email" id="email" placeholder="email@exemplo.com">
+        `;
+      } else if (metodo === "cartao") {
+        campos.innerHTML += `
+          <label for="numeroCartao">Número do Cartão</label>
+          <input type="text" id="numeroCartao" placeholder="0000 0000 0000 0000">
+        `;
+      } else if (metodo === "banco") {
+        campos.innerHTML += `
+          <label for="iban">IBAN</label>
+          <input type="text" id="iban" placeholder="Ex: AO06 0000 0000 0000">
+          <label for="banco">Nome do Banco</label>
+          <input type="text" id="banco" placeholder="Nome do Banco">
+        `;
+      }
+    }
+
+    function confirmarSaque() {
+      const valor = document.getElementById("valor").value.trim();
+      const metodo = document.getElementById("metodo").value;
+      const nome = document.getElementById("nome")?.value.trim();
+
+      if (!valor || isNaN(valor) || parseFloat(valor) <= 0) {
+        alert("Digite um valor válido.");
+        return;
+      }
+      if (!metodo || !nome) {
+        alert("Preencha todos os campos obrigatórios.");
+        return;
+      }
+
+      let dados = { metodo, valor: parseFloat(valor), nome };
+
+      if (metodo === "paypal") {
+        dados.email = document.getElementById("email")?.value.trim();
+        if (!dados.email) return alert("Informe o email do PayPal.");
+      }
+      if (metodo === "cartao") {
+        dados.cartao = document.getElementById("numeroCartao")?.value.trim();
+        if (!dados.cartao) return alert("Informe o número do cartão.");
+      }
+      if (metodo === "banco") {
+        dados.iban = document.getElementById("iban")?.value.trim();
+        dados.banco = document.getElementById("banco")?.value.trim();
+        if (!dados.iban || !dados.banco) return alert("Preencha os dados bancários.");
+      }
+
+      // Simula salvamento
+      let historico = JSON.parse(localStorage.getItem("saques") || "[]");
+      historico.push({ ...dados, data: new Date().toLocaleString(), status: "Pendente" });
+      localStorage.setItem("saques", JSON.stringify(historico));
+
+      alert("Saque solicitado com sucesso. Aguarde aprovação.");
+      window.location.href = "conta.html";
+    }
+  </script>
+
+</body>
+</html>

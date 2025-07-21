@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Criar Anúncio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      background: #111;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #222;
+    }
+
+    header h1 { font-size: 18px; }
+
+    .container {
+      padding: 20px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: white;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    label {
+      margin-top: 15px;
+      display: block;
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    .btn {
+      margin-top: 20px;
+      width: 100%;
+      background: #1e90ff;
+      border: none;
+      padding: 14px;
+      color: white;
+      font-size: 15px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #007bff;
+    }
+
+    .plano-resumo {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #333;
+      background: #111;
+      border-radius: 10px;
+    }
+
+    .plano-resumo p {
+      font-size: 13px;
+      color: #aaa;
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div onclick="history.back()" style="cursor:pointer;">←</div>
+  <h1>Criar Anúncio</h1>
+  <div></div>
+</header>
+
+<div class="container">
+
+  <label for="titulo">Título</label>
+  <input type="text" id="titulo" placeholder="Ex: Promoção de verão">
+
+  <label for="descricao">Descrição</label>
+  <textarea id="descricao" rows="4" placeholder="Fale mais sobre o anúncio..."></textarea>
+
+  <label for="categoria">Categoria</label>
+  <select id="categoria">
+    <option value="">Selecionar</option>
+    <option>Moda</option>
+    <option>Serviços</option>
+    <option>Tecnologia</option>
+    <option>Educação</option>
+    <option>Outros</option>
+  </select>
+
+  <label for="midia">Imagem ou Vídeo</label>
+  <input type="file" id="midia" accept="image/*,video/*">
+
+  <div class="plano-resumo" id="planoResumo">
+    <h3>Plano Selecionado</h3>
+    <p id="tipoPlano"></p>
+    <p id="valorPlano"></p>
+    <p id="alcancePlano"></p>
+  </div>
+
+  <button class="btn" onclick="publicarAnuncio()">Publicar Anúncio</button>
+</div>
+
+<script>
+  const plano = JSON.parse(localStorage.getItem("planoSelecionadoKunta"));
+  const pagou = localStorage.getItem("pagamentoAnuncioKunta");
+
+  if (!plano || pagou !== "ok") {
+    alert("Você precisa pagar antes de criar o anúncio.");
+    window.location.href = "pagamento_anuncio.html";
+  } else {
+    document.getElementById("tipoPlano").innerText = `Tipo: ${plano.tipo}`;
+    document.getElementById("valorPlano").innerText = `Valor: €${plano.valor}`;
+    document.getElementById("alcancePlano").innerText = `Alcance: ${plano.alcance}`;
+  }
+
+  function publicarAnuncio() {
+    const titulo = document.getElementById("titulo").value.trim();
+    const descricao = document.getElementById("descricao").value.trim();
+    const categoria = document.getElementById("categoria").value;
+    const midia = document.getElementById("midia").files[0];
+
+    if (!titulo || !descricao || !categoria || !midia) {
+      alert("Preencha todos os campos e selecione uma mídia.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function () {
+      const anuncios = JSON.parse(localStorage.getItem("anunciosKunta") || "[]");
+
+      anuncios.push({
+        titulo,
+        descricao,
+        categoria,
+        midia: reader.result,
+        tipo: plano.tipo,
+        alcance: plano.alcance,
+        valor: plano.valor,
+        data: new Date().toISOString()
+      });
+
+      localStorage.setItem("anunciosKunta", JSON.stringify(anuncios));
+      localStorage.removeItem("pagamentoAnuncioKunta");
+      localStorage.removeItem("planoSelecionadoKunta");
+
+      alert("Anúncio publicado com sucesso!");
+      window.location.href = "anuncios.html";
+    }
+
+    reader.readAsDataURL(midia);
+  }
+</script>
+
+</body>
+</html>

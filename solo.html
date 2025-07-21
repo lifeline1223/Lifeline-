@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>LIFELINE - Conferência Solo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background-color: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px;
+      background-color: #111;
+    }
+    .header .back {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .header .back i {
+      font-size: 22px;
+    }
+    .header .live-btn {
+      background-color: red;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .highlight-bar {
+      display: flex;
+      align-items: center;
+      overflow-x: auto;
+      padding: 6px 10px;
+      background-color: #111;
+      gap: 8px;
+    }
+    .highlight-bar .avatar {
+      width: 35px;
+      height: 35px;
+      background: gray;
+      border-radius: 50%;
+      flex-shrink: 0;
+      cursor: pointer;
+      border: 2px solid #444;
+    }
+    .highlight-bar .avatar.solicitando::after {
+      content: '!';
+      color: red;
+      position: absolute;
+      font-size: 18px;
+      top: -6px;
+      right: -6px;
+    }
+    .highlight-bar .invite-btn {
+      background-color: #00aaff;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 5px;
+      margin-left: auto;
+      flex-shrink: 0;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .theme {
+      text-align: center;
+      font-size: 14px;
+      background-color: #111;
+      padding: 8px 0;
+    }
+    .multi-view {
+      position: relative;
+      height: 60%;
+      padding: 10px;
+    }
+    .host-box {
+      width: 100%;
+      height: 100%;
+      background-color: #1e1e1e;
+      border-radius: 12px;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: left;
+      padding: 10px;
+    }
+    .host-name {
+      font-size: 13px;
+      background: rgba(0,0,0,0.6);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+    .self-view {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      width: 100px;
+      height: 150px;
+      background: #333;
+      border: 2px solid white;
+      border-radius: 8px;
+      padding: 5px;
+      font-size: 12px;
+      text-align: center;
+    }
+    .footer-icons {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      position: absolute;
+      bottom: 60px;
+      width: 100%;
+    }
+    .footer-icons i {
+      font-size: 26px;
+      background-color: rgba(255,255,255,0.1);
+      padding: 12px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .footer-icons i.active {
+      background-color: red;
+    }
+    .bottom-bar {
+      background-color: #111;
+      padding: 8px 12px;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+    }
+    .bottom-bar button {
+      background-color: #00aaff;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .accept-box {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      display: none;
+    }
+    .accept-box button {
+      margin-top: 10px;
+      padding: 6px 20px;
+      background: #00aaff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="back" onclick="voltar()">
+      <i class="material-icons">arrow_back</i> <span>LINE</span>
+    </div>
+    <button class="live-btn" onclick="encerrar()">Encerrar</button>
+  </div>
+
+  <div class="highlight-bar">
+    <div class="avatar solicitando" onclick="mostrarSolicitacao('Marta')"></div>
+    <div class="avatar"></div>
+    <div class="avatar"></div>
+    <button class="invite-btn" onclick="window.location.href='partilhar.html'">Convidar</button>
+  </div>
+
+  <div class="theme" id="temaConferencia">Tema: Como usar a LIFELINE para crescer</div>
+
+  <div class="multi-view">
+    <div class="host-box" id="remote-view">
+      <div class="host-name" id="nomeConvidado">Sua câmera aqui (modo solo)</div>
+    </div>
+    <!-- Tela pequena (auto inserida via script) -->
+  </div>
+
+  <div class="footer-icons">
+    <i class="material-icons mic-btn" onclick="toggleMic(this)">mic</i>
+    <i class="material-icons" onclick="trocarCamera()">flip_camera_android</i>
+    <i class="material-icons" onclick="receberPresente()">card_giftcard</i>
+    <i class="material-icons" onclick="encerrarConversa()">person_add</i>
+  </div>
+
+  <div class="bottom-bar">
+    <span>Transmissão ao vivo</span>
+    <button onclick="copiar()">Copiar link</button>
+  </div>
+
+  <div class="accept-box" id="solicitacao">
+    <div id="textoSolicitacao">Usuário deseja falar com você.</div>
+    <button onclick="aceitarSolicitacao()">Aceitar</button>
+  </div>
+
+  <script>
+    let emConversa = false;
+    let nomeSolicitante = '';
+
+    function voltar() {
+      window.location.href = 'criar_conferencia.html';
+    }
+
+    function encerrar() {
+      alert("Conferência encerrada!");
+      window.location.href = 'criar_conferencia.html';
+    }
+
+    function copiar() {
+      alert("Link copiado!");
+    }
+
+    function toggleMic(btn) {
+      btn.classList.toggle("active");
+      alert(btn.classList.contains("active") ? "Microfone desligado" : "Microfone ligado");
+    }
+
+    function trocarCamera() {
+      alert("Câmera trocada!");
+    }
+
+    function receberPresente() {
+      alert("Presente recebido!");
+    }
+
+    function mostrarSolicitacao(nome) {
+      nomeSolicitante = nome;
+      document.getElementById("textoSolicitacao").innerText = `${nome} pediu para falar com você.`;
+      document.getElementById("solicitacao").style.display = "block";
+    }
+
+    function aceitarSolicitacao() {
+      localStorage.setItem("convidadoAtual", nomeSolicitante);
+      emConversa = true;
+      document.getElementById("solicitacao").style.display = "none";
+
+      document.getElementById("nomeConvidado").innerText = nomeSolicitante;
+      document.getElementById("remote-view").innerHTML = `
+        <div class="host-name">${nomeSolicitante}</div>
+      `;
+
+      const selfView = document.createElement("div");
+      selfView.className = "self-view";
+      selfView.innerText = "Você";
+      document.querySelector(".multi-view").appendChild(selfView);
+    }
+
+    function encerrarConversa() {
+      if (emConversa) {
+        emConversa = false;
+        document.getElementById("remote-view").innerHTML = `
+          <div class="host-name">Sua câmera aqui (modo solo)</div>
+        `;
+        const self = document.querySelector(".self-view");
+        if (self) self.remove();
+      }
+    }
+
+    window.onload = () => {
+      const tipo = localStorage.getItem("tipoConferencia");
+      const convidadoSalvo = localStorage.getItem("convidadoAtual");
+
+      if (convidadoSalvo) {
+        nomeSolicitante = convidadoSalvo;
+        aceitarSolicitacao();
+      }
+
+      if (tipo === "publica") {
+        window.open("conferente.html", "_blank");
+      }
+    };
+  </script>
+
+</body>
+</html>

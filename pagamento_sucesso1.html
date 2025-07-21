@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Pagamento Confirmado</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .icone-sucesso {
+      font-size: 80px;
+      color: #4caf50;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      color: #4caf50;
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 14px;
+      color: #aaa;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .detalhes {
+      font-size: 14px;
+      background: #111;
+      padding: 15px 20px;
+      border-radius: 10px;
+      border-left: 4px solid #4caf50;
+      margin-bottom: 25px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    button {
+      background: #4caf50;
+      color: white;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    button:hover {
+      background: #43a047;
+    }
+  </style>
+</head>
+<body>
+
+  <i class="material-icons icone-sucesso">check_circle</i>
+  <h1>Pagamento Confirmado</h1>
+  <p>Seu plano foi ativado com sucesso!</p>
+
+  <div class="detalhes" id="infoPlano">
+    <!-- Detalhes do plano serão inseridos aqui -->
+  </div>
+
+  <button onclick="window.location.href='subscricao.html'">Voltar para Subscrição</button>
+
+  <script>
+    const plano = JSON.parse(localStorage.getItem("planoSelecionado") || "{}");
+    const div = document.getElementById("infoPlano");
+
+    if (plano.nome && plano.preco) {
+      div.innerHTML = `
+        <strong>Plano:</strong> ${plano.nome}<br>
+        <strong>Valor:</strong> €${plano.preco.toFixed(2)}<br>
+        <strong>Status:</strong> Ativo
+      `;
+    } else {
+      div.innerHTML = "Informações do plano não encontradas.";
+    }
+  </script>
+
+</body>
+</html>

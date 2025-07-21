@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mensagens - LIFELINE</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: #fff;
+      padding-bottom: 80px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      background: #111;
+      border-bottom: 1px solid #222;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header h2 {
+      font-size: 18px;
+    }
+
+    .header .material-icons {
+      cursor: pointer;
+    }
+
+    .filter-bar {
+      display: flex;
+      justify-content: space-around;
+      padding: 10px;
+      background: #111;
+      border-bottom: 1px solid #222;
+    }
+
+    .filter-btn {
+      padding: 8px 14px;
+      border-radius: 20px;
+      background: #222;
+      color: #aaa;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .filter-btn.active {
+      background: #00aaff;
+      color: #fff;
+    }
+
+    .chat-list {
+      padding: 10px 16px;
+    }
+
+    .chat-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px;
+      border-bottom: 1px solid #222;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.2s ease;
+    }
+
+    .chat-item.selected {
+      background: #003f5c;
+    }
+
+    .chat-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .chat-left img {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+    }
+
+    .chat-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-info strong {
+      font-size: 16px;
+    }
+
+    .chat-info span {
+      font-size: 13px;
+      color: #ccc;
+    }
+
+    .chat-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .btn-flutuante {
+      position: fixed;
+      bottom: 100px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-flutuante button {
+      background: #00aaff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 60px;
+      right: 10px;
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 6px;
+      display: none;
+      flex-direction: column;
+      z-index: 100;
+    }
+
+    .dropdown-menu div {
+      padding: 10px 14px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .dropdown-menu div:hover {
+      background: #333;
+    }
+
+    .action-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #111;
+      display: none;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px;
+      border-top: 1px solid #222;
+      z-index: 200;
+    }
+
+    .action-bar i {
+      font-size: 24px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cabeçalho -->
+  <div class="header">
+    <div class="header-left">
+      <i class="material-icons" onclick="window.location.href='feed.html'">arrow_back</i>
+      <h2>Mensagens</h2>
+    </div>
+    <div>
+      <i class="material-icons" onclick="window.location.href='paginaschat.html'">search</i>
+      <i class="material-icons" onclick="abrirDropdown()">more_vert</i>
+    </div>
+  </div>
+
+  <!-- Menu dropdown -->
+  <div class="dropdown-menu" id="menu">
+    <div onclick="alternarOnline(this)">Estado: Online</div>
+    <div onclick="window.location.href='chatdefinicoes.html'">Definições de mensagens</div>
+    <div onclick="bloquearTudo()">Bloquear tudo</div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filter-bar">
+    <div class="filter-btn active" onclick="filtro('principais')">Principais</div>
+    <div class="filter-btn" onclick="filtro('arquivadas')">Arquivadas</div>
+    <div class="filter-btn" onclick="filtro('pedidos')">Pedidos de Partilha</div>
+  </div>
+
+  <!-- Lista de mensagens -->
+  <div class="chat-list" id="chatList"></div>
+
+  <!-- Ações ao selecionar -->
+  <div class="action-bar" id="actionBar">
+    <i class="material-icons" onclick="eliminarSelecionadas()">delete</i>
+    <i class="material-icons" onclick="silenciarSelecionadas()">notifications_off</i>
+    <i class="material-icons" onclick="arquivarSelecionadas()">archive</i>
+    <i class="material-icons" onclick="marcarNaoLidaSelecionadas()">markunread</i>
+  </div>
+
+  <!-- Botões flutuantes -->
+  <div class="btn-flutuante">
+    <button title="Nova mensagem" onclick="window.location.href='nova_mensagem.html'"><i class="material-icons">chat</i></button>
+    <button title="Criar grupo" onclick="window.location.href='grupo.html'"><i class="material-icons">group_add</i></button>
+  </div>
+
+  <script>
+    const chatList = document.getElementById("chatList");
+    const btns = document.querySelectorAll('.filter-btn');
+    const actionBar = document.getElementById("actionBar");
+    let selecionadas = new Set();
+
+    function abrirDropdown() {
+      const menu = document.getElementById("menu");
+      menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+    }
+
+    function alternarOnline(el) {
+      const texto = el.innerText.includes("Online") ? "Estado: Offline" : "Estado: Online";
+      el.innerText = texto;
+    }
+
+    function bloquearTudo() {
+      alert("Mensagens bloqueadas. Você ainda pode enviar e receber de contatos existentes.");
+    }
+
+    function filtro(tipo) {
+      btns.forEach(b => b.classList.remove("active"));
+      event.target.classList.add("active");
+      chatList.innerHTML = "";
+      if (tipo === "principais") carregarPrincipais();
+      else if (tipo === "arquivadas") carregarArquivadas();
+      else carregarPedidos();
+    }
+
+    function carregarPrincipais() {
+      const dados = [
+        { id: 1, nome: "Joana Silva", msg: "Já enviei o comprovativo, viste?", hora: "10:45" },
+        { id: 2, nome: "Carlos Mendes", msg: "Vamos conversar amanhã?", hora: "09:32" },
+        { id: 3, nome: "Beatriz L.", msg: "Recebi tua mensagem sim!", hora: "Ontem" },
+        { id: 4, nome: "Grupo Família", msg: "Mãe: Está tudo pronto para o almoço?", hora: "Ontem" },
+      ];
+
+      dados.forEach(d => {
+        const item = document.createElement("div");
+        item.className = "chat-item";
+        item.dataset.id = d.id;
+        item.innerHTML = `
+          <div class="chat-left">
+            <img src="https://via.placeholder.com/48" />
+            <div class="chat-info">
+              <strong>${d.nome}</strong>
+              <span>${d.msg}</span>
+            </div>
+          </div>
+          <div class="chat-right">
+            <span>${d.hora}</span>
+          </div>
+        `;
+        item.addEventListener("click", () => {
+          if (selecionadas.size > 0) toggleSelecionada(item);
+          else window.location.href = "chat.html";
+        });
+        item.addEventListener("contextmenu", (e) => {
+          e.preventDefault();
+          toggleSelecionada(item);
+        });
+        chatList.appendChild(item);
+      });
+    }
+
+    function toggleSelecionada(item) {
+      const id = item.dataset.id;
+      if (selecionadas.has(id)) {
+        selecionadas.delete(id);
+        item.classList.remove("selected");
+      } else {
+        selecionadas.add(id);
+        item.classList.add("selected");
+      }
+      atualizarBarraAcoes();
+    }
+
+    function atualizarBarraAcoes() {
+      actionBar.style.display = selecionadas.size > 0 ? "flex" : "none";
+    }
+
+    function eliminarSelecionadas() {
+      selecionadas.forEach(id => {
+        const el = document.querySelector(`.chat-item[data-id='${id}']`);
+        if (el) el.remove();
+      });
+      selecionadas.clear();
+      atualizarBarraAcoes();
+    }
+
+    function silenciarSelecionadas() {
+      alert("Mensagens silenciadas.");
+      selecionadas.clear();
+      atualizarBarraAcoes();
+    }
+
+    function arquivarSelecionadas() {
+      alert("Mensagens arquivadas.");
+      selecionadas.clear();
+      atualizarBarraAcoes();
+    }
+
+    function marcarNaoLidaSelecionadas() {
+      alert("Marcado como não lida.");
+      selecionadas.clear();
+      atualizarBarraAcoes();
+    }
+
+    document.addEventListener("DOMContentLoaded", carregarPrincipais);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Backspace" || e.key === "Escape") {
+        selecionadas.clear();
+        document.querySelectorAll('.chat-item').forEach(el => el.classList.remove("selected"));
+        atualizarBarraAcoes();
+      }
+    });
+  </script>
+
+</body>
+</html>

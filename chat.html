@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chat Privado</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #111;
+      padding: 10px 14px;
+      border-bottom: 1px solid #222;
+      position: relative;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-left img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    .header-left .name {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .header-right i {
+      font-size: 22px;
+      margin-left: 14px;
+      cursor: pointer;
+    }
+
+    .dropdown {
+      position: absolute;
+      top: 55px;
+      right: 10px;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 8px;
+      display: none;
+      flex-direction: column;
+      z-index: 9;
+    }
+
+    .dropdown button {
+      background: none;
+      border: none;
+      padding: 12px 16px;
+      text-align: left;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .dropdown button:hover {
+      background: #222;
+    }
+
+    .messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message {
+      max-width: 75%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      position: relative;
+      word-wrap: break-word;
+    }
+
+    .received {
+      background: #222;
+      align-self: flex-start;
+    }
+
+    .sent {
+      background: #0055aa;
+      align-self: flex-end;
+    }
+
+    .time {
+      font-size: 11px;
+      opacity: 0.7;
+      margin-top: 4px;
+      text-align: right;
+    }
+
+    .footer {
+      background: #111;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      border-top: 1px solid #222;
+      gap: 6px;
+      position: relative;
+    }
+
+    .footer i {
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .footer input {
+      flex: 1;
+      background: #222;
+      border: none;
+      color: white;
+      border-radius: 20px;
+      padding: 10px 14px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .attach-menu {
+      display: none;
+      position: absolute;
+      bottom: 60px;
+      left: 10px;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 10px;
+      flex-wrap: wrap;
+      gap: 10px;
+      width: 230px;
+      z-index: 10;
+    }
+
+    .attach-menu .item {
+      width: 48px;
+      text-align: center;
+      font-size: 12px;
+      color: white;
+    }
+
+    .attach-menu .item i {
+      font-size: 26px;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    #emojiPanel, #stickerPanel {
+      position: absolute;
+      bottom: 60px;
+      background: #222;
+      border: 1px solid #444;
+      border-radius: 10px;
+      padding: 10px;
+      z-index: 11;
+      display: none;
+    }
+
+    #emojiPanel span {
+      font-size: 24px;
+      padding: 5px;
+      cursor: pointer;
+    }
+
+    #stickerPanel img {
+      width: 64px;
+      height: 64px;
+      margin: 4px;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-left">
+      <img src="https://via.placeholder.com/40" alt="Perfil" onclick="alert('Ver perfil')">
+      <div class="name">João Pedro</div>
+    </div>
+    <div class="header-right">
+      <i class="material-icons" onclick="alert('Chamada de vídeo')">videocam</i>
+      <i class="material-icons" onclick="alert('Chamada de voz')">call</i>
+      <i class="material-icons" onclick="toggleDropdown()">more_vert</i>
+    </div>
+    <div class="dropdown" id="menuDropdown">
+      <button onclick="window.location='denunciar.html'">Denunciar</button>
+      <button onclick="window.location='bloquear.html'">Bloquear</button>
+      <button onclick="alert('Conversa limpa')">Limpar conversa</button>
+      <button onclick="alert('Exportar conversa')">Exportar conversa</button>
+      <button onclick="window.location='notificacoes.html'">Notificações</button>
+      <button onclick="window.location='mensagens-temporarias.html'">Mensagens temporárias</button>
+    </div>
+  </div>
+
+  <div class="messages" id="chat">
+    <div class="message received">
+      Olá, tudo bem?
+      <div class="time">09:00</div>
+    </div>
+    <div class="message sent">
+      Tudo sim, e contigo?
+      <div class="time">09:01</div>
+    </div>
+  </div>
+
+  <div id="emojiPanel">
+    <span onclick="inserirEmoji('😀')">😀</span>
+    <span onclick="inserirEmoji('😂')">😂</span>
+    <span onclick="inserirEmoji('😍')">😍</span>
+    <span onclick="inserirEmoji('😎')">😎</span>
+    <span onclick="inserirEmoji('👍')">👍</span>
+    <span onclick="inserirEmoji('🙏')">🙏</span>
+    <span onclick="inserirEmoji('😢')">😢</span>
+    <span onclick="inserirEmoji('🔥')">🔥</span>
+  </div>
+
+  <div id="stickerPanel">
+    <img src="https://i.imgur.com/8Km9tLL.png" onclick="enviarSticker(this.src)">
+    <img src="https://i.imgur.com/1X5aYiB.png" onclick="enviarSticker(this.src)">
+    <img src="https://i.imgur.com/kbN77fz.png" onclick="enviarSticker(this.src)">
+    <img src="https://i.imgur.com/ZlR7aU5.png" onclick="enviarSticker(this.src)">
+  </div>
+
+  <div class="footer">
+    <i class="material-icons" onclick="toggleEmojiPanel()">insert_emoticon</i>
+    <i class="material-icons" onclick="toggleStickerPanel()">emoji_objects</i>
+    <i class="material-icons" onclick="toggleAttach()">add</i>
+    <input type="text" placeholder="Digite uma mensagem..." id="inputMsg"/>
+    <i class="material-icons" onclick="enviarMensagem()">send</i>
+  </div>
+
+  <div class="attach-menu" id="attachMenu">
+    <div class="item" onclick="alert('Foto')"><i class="material-icons">photo</i>Foto</div>
+    <div class="item" onclick="alert('Vídeo')"><i class="material-icons">videocam</i>Vídeo</div>
+    <div class="item" onclick="alert('Áudio')"><i class="material-icons">audiotrack</i>Áudio</div>
+    <div class="item" onclick="alert('Contato')"><i class="material-icons">contacts</i>Contato</div>
+    <div class="item" onclick="alert('Documento')"><i class="material-icons">attach_file</i>Arquivo</div>
+    <div class="item" onclick="alert('Localização')"><i class="material-icons">location_on</i>Local</div>
+    <div class="item" onclick="alert('Sondagem')"><i class="material-icons">poll</i>Sondagem</div>
+    <div class="item" onclick="alert('Evento')"><i class="material-icons">event</i>Evento</div>
+  </div>
+
+  <script>
+    function toggleDropdown() {
+      const drop = document.getElementById("menuDropdown");
+      drop.style.display = drop.style.display === "flex" ? "none" : "flex";
+      drop.style.flexDirection = "column";
+    }
+
+    function toggleAttach() {
+      const menu = document.getElementById("attachMenu");
+      menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+    }
+
+    function toggleEmojiPanel() {
+      const emoji = document.getElementById("emojiPanel");
+      emoji.style.display = emoji.style.display === "block" ? "none" : "block";
+      document.getElementById("stickerPanel").style.display = "none";
+    }
+
+    function toggleStickerPanel() {
+      const sticker = document.getElementById("stickerPanel");
+      sticker.style.display = sticker.style.display === "block" ? "none" : "block";
+      document.getElementById("emojiPanel").style.display = "none";
+    }
+
+    function inserirEmoji(emoji) {
+      const campo = document.getElementById("inputMsg");
+      campo.value += emoji;
+      campo.focus();
+      document.getElementById("emojiPanel").style.display = "none";
+    }
+
+    function enviarMensagem() {
+      const campo = document.getElementById("inputMsg");
+      const texto = campo.value.trim();
+      if (!texto) return;
+      const div = document.createElement("div");
+      div.className = "message sent";
+      div.innerHTML = `${texto}<div class="time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>`;
+      document.getElementById("chat").appendChild(div);
+      campo.value = "";
+      document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
+    }
+
+    function enviarSticker(src) {
+      const div = document.createElement("div");
+      div.className = "message sent";
+      div.innerHTML = `<img src="${src}" style="max-width: 120px; border-radius: 10px;"><div class="time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>`;
+      document.getElementById("chat").appendChild(div);
+      document.getElementById("stickerPanel").style.display = "none";
+      document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
+    }
+
+    // Fechar menus ao clicar fora
+    document.addEventListener("click", function(e) {
+      if (!e.target.closest(".header-right")) {
+        document.getElementById("menuDropdown").style.display = "none";
+      }
+      if (!e.target.closest(".footer") && !e.target.closest(".attach-menu")) {
+        document.getElementById("attachMenu").style.display = "none";
+      }
+      if (!e.target.closest("#emojiPanel") && !e.target.closest("[onclick*='toggleEmojiPanel']")) {
+        document.getElementById("emojiPanel").style.display = "none";
+      }
+      if (!e.target.closest("#stickerPanel") && !e.target.closest("[onclick11*='toggleStickerPanel']")) {
+        document.getElementById("stickerPanel").style.display = "none";
+      }
+    });
+  </script>
+
+</body>
+</html>

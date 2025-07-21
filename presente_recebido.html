@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Presentes Recebidos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: #111;
+      border-bottom: 1px solid #222;
+    }
+
+    header h1 {
+      font-size: 18px;
+    }
+
+    .material-icons {
+      cursor: pointer;
+      color: #1e90ff;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .presente {
+      background: #111;
+      border: 1px solid #333;
+      padding: 14px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 2px 6px rgba(255,255,255,0.05);
+    }
+
+    .icone {
+      font-size: 30px;
+      color: #f48fb1;
+    }
+
+    .info {
+      flex-grow: 1;
+    }
+
+    .info h3 {
+      font-size: 15px;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .info p {
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    .vazio {
+      text-align: center;
+      color: #555;
+      font-size: 14px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div onclick="history.back()"><i class="material-icons">arrow_back</i></div>
+  <h1>Presentes Recebidos</h1>
+  <div></div>
+</header>
+
+<div class="container" id="listaRecebidos">
+  <!-- Presentes recebidos serão exibidos aqui -->
+</div>
+
+<script>
+  const lista = document.getElementById("listaRecebidos");
+  const recebidos = JSON.parse(localStorage.getItem("presentesRecebidos") || "[]");
+
+  if (recebidos.length === 0) {
+    lista.innerHTML = "<p class='vazio'>Você ainda não recebeu nenhum presente.</p>";
+  } else {
+    recebidos.reverse().forEach(p => {
+      const div = document.createElement("div");
+      div.className = "presente";
+      div.innerHTML = `
+        <span class="material-icons icone">redeem</span>
+        <div class="info">
+          <h3>+${p.quantidade} bônus de <strong>${p.remetente}</strong></h3>
+          <p>${p.data}</p>
+        </div>
+      `;
+      lista.appendChild(div);
+    });
+  }
+</script>
+
+</body>
+</html>

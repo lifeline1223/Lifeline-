@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Nova Senha</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
+
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #1e1e1e;
+      padding: 25px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 380px;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    input {
+      background: #2c2c2c;
+      color: white;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #005fcc;
+    }
+
+    .mensagem {
+      margin-top: 15px;
+      font-size: 14px;
+      text-align: center;
+      color: #f44336;
+      display: none;
+    }
+
+    .mensagem.sucesso {
+      color: #4caf50;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Nova Senha</h2>
+    <input type="password" id="novaSenha" placeholder="Nova senha">
+    <input type="password" id="confirmarSenha" placeholder="Confirmar nova senha">
+    <button onclick="atualizarSenha()">Salvar nova senha</button>
+    <div class="mensagem" id="mensagem"></div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCIxyvUWuPDwsUhJpajyBuZuVRmNFbbTBk",
+      authDomain: "lifeline-78bce.firebaseapp.com",
+      databaseURL: "https://lifeline-78bce-default-rtdb.firebaseio.com",
+      projectId: "lifeline-78bce",
+      storageBucket: "lifeline-78bce.appspot.com",
+      messagingSenderId: "415768649474",
+      appId: "1:415768649474:web:58256fd83b17f13fdadbd8"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    function exibirMensagem(texto, sucesso = false) {
+      const el = document.getElementById("mensagem");
+      el.textContent = texto;
+      el.className = "mensagem" + (sucesso ? " sucesso" : "");
+      el.style.display = "block";
+      setTimeout(() => {
+        el.style.display = "none";
+      }, 5000);
+    }
+
+    async function atualizarSenha() {
+      const nova = document.getElementById("novaSenha").value.trim();
+      const confirmar = document.getElementById("confirmarSenha").value.trim();
+
+      if (!nova || !confirmar) {
+        exibirMensagem("Preencha todos os campos.");
+        return;
+      }
+
+      if (nova !== confirmar) {
+        exibirMensagem("As senhas não coincidem.");
+        return;
+      }
+
+      const numero = localStorage.getItem("numeroRecuperacao");
+      if (!numero) {
+        exibirMensagem("Erro: número não autenticado.");
+        return;
+      }
+
+      const user = auth.currentUser;
+      if (!user || user.phoneNumber !== numero) {
+        exibirMensagem("Autenticação inválida. Refaça a verificação.");
+        return;
+      }
+
+      try {
+        const hash = await bcrypt.hash(nova, 10);
+        await db.ref("usuarios/" + numero).update({ senha: hash });
+        exibirMensagem("Senha atualizada com sucesso!", true);
+        localStorage.removeItem("numeroRecuperacao");
+        await auth.signOut();
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 1500);
+      } catch (error) {
+        console.error(error);
+        exibirMensagem("Erro ao atualizar senha.");
+      }
+    }
+  </script>
+</body>
+</html>

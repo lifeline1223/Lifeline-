@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>alcunhas</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      background-color: #1a1a1a;
+      border-bottom: 1px solid #333;
+    }
+
+    .header img {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .header h2 {
+      font-size: 18px;
+    }
+
+    .user-list {
+      padding: 10px;
+    }
+
+    .user {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #333;
+      cursor: pointer;
+    }
+
+    .user img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #1f1f1f;
+      padding: 20px;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+      display: none;
+      flex-direction: column;
+    }
+
+    .modal input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background: #333;
+      border: none;
+      border-radius: 8px;
+      color: white;
+    }
+
+    .modal .actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+
+    .modal button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .cancel {
+      background: #444;
+      color: white;
+    }
+
+    .save {
+      background: #007bff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <img src="https://img.icons8.com/ios-filled/50/ffffff/back.png" onclick="voltarParaChat()">
+    <h2>Alcunhas</h2>
+  </div>
+
+  <div class="user-list" id="userList"></div>
+
+  <div class="modal" id="modal">
+    <h3 id="modalTitle">Editar apelido</h3>
+    <p id="subInfo"></p>
+    <input type="text" id="apelidoInput" placeholder="Digite o apelido...">
+    <div class="actions">
+      <button class="cancel" onclick="fecharModal()">Cancelar</button>
+      <button class="save" onclick="salvarApelido()">Salvar</button>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const currentUser = params.get("eu");        // ID do usuário atual
+    const comUsuario = params.get("com");        // ID do outro usuário
+
+    const usuarios = {
+      user1: { nome: "João Salvador", img: "https://via.placeholder.com/40/000000?text=J" },
+      user2: { nome: "Leändro Märquês", img: "https://via.placeholder.com/40/333333?text=L" },
+    };
+
+    function voltarParaChat() {
+      window.location.href = `chat.html?eu=${currentUser}&com=${comUsuario}`;
+    }
+
+    function renderizarUsuarios() {
+      const userList = document.getElementById("userList");
+      userList.innerHTML = "";
+
+      [currentUser, comUsuario].forEach(userId => {
+        const apelido = localStorage.getItem(`apelido_${currentUser}_${userId}`) || "";
+        const user = usuarios[userId];
+        const el = document.createElement("div");
+        el.className = "user";
+        el.innerHTML = `
+          <img src="${user.img}" alt="${user.nome}">
+          <div class="user-info">
+            <strong>${user.nome}</strong>
+            <span style="color: gray;">${apelido ? apelido : "Definir apelido"}</span>
+          </div>
+        `;
+        el.onclick = () => abrirModal(userId);
+        userList.appendChild(el);
+      });
+    }
+
+    let userSelecionado = null;
+
+    function abrirModal(userId) {
+      userSelecionado = userId;
+      const nome = usuarios[userId].nome;
+      document.getElementById("modalTitle").textContent = "Editar apelido";
+      document.getElementById("subInfo").textContent = `${nome} somente verá a alteração nesta conversa.`;
+      const apelido = localStorage.getItem(`apelido_${currentUser}_${userId}`) || "";
+      document.getElementById("apelidoInput").value = apelido;
+      document.getElementById("modal").style.display = "flex";
+    }
+
+    function fecharModal() {
+      document.getElementById("modal").style.display = "none";
+    }
+
+    function salvarApelido() {
+      const apelido = document.getElementById("apelidoInput").value.trim();
+      if (userSelecionado) {
+        localStorage.setItem(`apelido_${currentUser}_${userSelecionado}`, apelido);
+        fecharModal();
+        renderizarUsuarios();
+      }
+    }
+
+    renderizarUsuarios();
+  </script>
+</body>
+</html>

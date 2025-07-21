@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Histórico da Conta</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 16px;
+    }
+
+    header h1 {
+      font-size: 18px;
+    }
+
+    .material-icons {
+      color: #1e90ff;
+      cursor: pointer;
+    }
+
+    .filtro {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    select {
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 8px;
+      background: #1a1a1a;
+      color: #fff;
+      border: none;
+    }
+
+    .registro {
+      background: #111;
+      padding: 14px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      border-left: 4px solid #1e90ff;
+    }
+
+    .registro strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .registro span {
+      font-size: 13px;
+      color: #ccc;
+    }
+
+    .valor {
+      color: #4caf50;
+      font-weight: bold;
+      float: right;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div onclick="history.back()"><i class="material-icons">arrow_back</i></div>
+  <h1>Histórico da Conta</h1>
+  <div></div>
+</header>
+
+<div class="filtro">
+  <select id="filtroTipo" onchange="filtrarHistorico()">
+    <option value="todos">Todos</option>
+    <option value="saque">Saque</option>
+    <option value="compra">Compra de LIN</option>
+    <option value="conversao">Conversão</option>
+    <option value="resgate">Resgate</option>
+    <option value="ganho">Ganhos</option>
+    <option value="presente_enviado">Presente Enviado</option>
+    <option value="presente_recebido">Presente Recebido</option>
+  </select>
+</div>
+
+<div id="listaHistorico">
+  <!-- Registros aparecem aqui -->
+</div>
+
+<script>
+  const historico = JSON.parse(localStorage.getItem("historicoConta") || "[]");
+
+  const tipos = {
+    saque: "Saque Realizado",
+    compra: "Compra de LIN",
+    conversao: "Conversão para Presente",
+    resgate: "Presente Resgatado",
+    ganho: "Ganhos Recebidos",
+    presente_enviado: "Presente Enviado",
+    presente_recebido: "Presente Recebido"
+  };
+
+  function renderizarHistorico(filtro = "todos") {
+    const container = document.getElementById("listaHistorico");
+    container.innerHTML = "";
+
+    const lista = filtro === "todos" ? historico : historico.filter(item => item.tipo === filtro);
+
+    if (lista.length === 0) {
+      container.innerHTML = "<p style='color:#999;'>Nenhum registro encontrado.</p>";
+      return;
+    }
+
+    lista.reverse().forEach(item => {
+      const div = document.createElement("div");
+      div.className = "registro";
+      div.innerHTML = `
+        <strong>${tipos[item.tipo] || "Transação"}</strong>
+        <span>${item.data} | ${item.hora}</span>
+        <div class="valor">${item.valor}</div>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  function filtrarHistorico() {
+    const tipo = document.getElementById("filtroTipo").value;
+    renderizarHistorico(tipo);
+  }
+
+  renderizarHistorico();
+</script>
+
+</body>
+</html>

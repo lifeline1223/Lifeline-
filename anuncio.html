@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Anúncios</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid #222;
+    }
+
+    header h1 { font-size: 18px; }
+    .material-icons { cursor: pointer; }
+
+    .container {
+      padding: 20px;
+    }
+
+    .btn {
+      background: #1e90ff;
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 15px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #007bff;
+    }
+
+    .btn.verificacao {
+      background: #444;
+    }
+
+    .btn.verificacao:hover {
+      background: #666;
+    }
+
+    .anuncio {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    .anuncio h3 {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+
+    .anuncio p {
+      font-size: 13px;
+      color: #ccc;
+    }
+
+    .media {
+      width: 100%;
+      max-height: 220px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    .acoes {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .btn-acao {
+      flex: 1;
+      background: #333;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .btn-acao:hover {
+      background: #555;
+    }
+
+    .vazio {
+      text-align: center;
+      color: #555;
+      margin-top: 50px;
+    }
+
+    .detalhes-plano {
+      font-size: 12px;
+      color: #888;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div onclick="history.back()"><i class="material-icons">arrow_back</i></div>
+  <h1>Anúncios</h1>
+  <div></div>
+</header>
+
+<div class="container">
+
+  <button class="btn" onclick="window.location.href='criar_anuncio.html'">
+    Criar Anúncio
+  </button>
+
+  <button class="btn verificacao" onclick="window.location.href='verificacao_perfil.html'">
+    Obter Verificação
+  </button>
+
+  <div id="listaAnuncios">
+    <p class="vazio">Nenhum anúncio criado ainda.</p>
+  </div>
+
+</div>
+
+<script>
+  const container = document.getElementById("listaAnuncios");
+  const lista = JSON.parse(localStorage.getItem("anunciosKunta") || "[]");
+
+  if (lista.length === 0) {
+    container.innerHTML = `<p class="vazio">Nenhum anúncio criado ainda.</p>`;
+  } else {
+    container.innerHTML = "";
+    lista.forEach((a, i) => {
+      const el = document.createElement("div");
+      el.className = "anuncio";
+
+      // Mostrar mídia
+      let midiaHTML = '';
+      if (a.midia && a.midia.startsWith("data:image")) {
+        midiaHTML = `<img class="media" src="${a.midia}" alt="Imagem do anúncio">`;
+      } else if (a.midia && a.midia.startsWith("data:video")) {
+        midiaHTML = `<video class="media" src="${a.midia}" controls muted></video>`;
+      }
+
+      el.innerHTML = `
+        <h3>${a.titulo}</h3>
+        <p>${a.descricao}</p>
+        ${midiaHTML}
+        <div class="detalhes-plano">
+          Categoria: ${a.categoria} <br>
+          Plano: ${a.tipo} | €${a.valor} | Alcance: ${a.alcance} <br>
+          Publicado: ${new Date(a.data).toLocaleDateString()}
+        </div>
+        <div class="acoes">
+          <button class="btn-acao" onclick="editarAnuncio(${i})">Editar</button>
+          <button class="btn-acao" onclick="destacarAnuncio(${i})">Destacar</button>
+          <button class="btn-acao" style="background:red;" onclick="excluirAnuncio(${i})">Excluir</button>
+        </div>
+      `;
+
+      container.appendChild(el);
+    });
+  }
+
+  function excluirAnuncio(index) {
+    const lista = JSON.parse(localStorage.getItem("anunciosKunta") || "[]");
+    lista.splice(index, 1);
+    localStorage.setItem("anunciosKunta", JSON.stringify(lista));
+    location.reload();
+  }
+
+  function editarAnuncio(index) {
+    alert("Funcionalidade de edição será implementada em breve.");
+    // Em breve: redirecionar para editar_anuncio.html
+  }
+
+  function destacarAnuncio(index) {
+    alert("Seu anúncio será priorizado nas exibições por 24h.");
+    // Em breve: lógica para dar destaque ao anúncio.
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Lifeline</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom right, #0f0f0f, #1a1a1a);
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: #1e1e1e;
+      width: 90%;
+      max-width: 400px;
+      padding: 40px 28px;
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.6);
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border: 1px solid #333;
+      border-radius: 10px;
+      background-color: #2a2a2a;
+      color: white;
+      font-size: 16px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #007bff;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 20px;
+      background-color: #0077ff;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #005fcc;
+    }
+
+    .link {
+      margin-top: 18px;
+      font-size: 14px;
+    }
+
+    .link a {
+      color: #00aaff;
+      text-decoration: none;
+    }
+
+    .link a:hover {
+      text-decoration: underline;
+    }
+
+    .mensagem {
+      text-align: center;
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 6px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .mensagem.erro {
+      color: #ff4b4b;
+    }
+
+    .mensagem.sucesso {
+      color: #00cc88;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Entrar na Lifeline</h2>
+    
+    <input type="tel" id="telefone" placeholder="Número de telefone" />
+    <input type="password" id="senha" placeholder="Senha" />
+    <button onclick="entrar()">Entrar</button>
+
+    <div class="mensagem" id="mensagem"></div>
+
+    <div class="link">
+      <a href="cadastro.html">Criar nova conta</a>
+    </div>
+    <div class="link">
+      <a href="recuperar_verificar.html">Esqueceu a senha?</a>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      databaseURL: "https://lifeline-78bce-default-rtdb.firebaseio.com/"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    function mostrarMensagem(texto, tipo = "erro") {
+      const msg = document.getElementById("mensagem");
+      msg.textContent = texto;
+      msg.className = "mensagem " + tipo;
+      msg.style.display = "block";
+
+      setTimeout(() => {
+        msg.style.display = "none";
+      }, 5000);
+    }
+
+    function entrar() {
+      const telefone = document.getElementById("telefone").value.trim();
+      const senha = document.getElementById("senha").value.trim();
+
+      if (!telefone || !senha) {
+        mostrarMensagem("Preencha todos os campos.");
+        return;
+      }
+
+      firebase.database().ref("usuarios/" + telefone).once("value")
+        .then(snapshot => {
+          if (!snapshot.exists()) {
+            mostrarMensagem("Usuário não encontrado.");
+            return;
+          }
+
+          const user = snapshot.val();
+
+          if (user.senha !== senha) {
+            mostrarMensagem("Senha incorreta.");
+            return;
+          }
+
+          localStorage.setItem("usuarioAtualKunta", JSON.stringify(user));
+          localStorage.setItem("usuarioLogado", telefone);
+          mostrarMensagem("Login realizado com sucesso!", "sucesso");
+
+          setTimeout(() => {
+            window.location.href = "feed.html";
+          }, 1000);
+        })
+        .catch(error => {
+          mostrarMensagem("Erro ao acessar o banco de dados.", "erro");
+          console.error(error);
+        });
+    }
+  </script>
+
+</body>
+</html>

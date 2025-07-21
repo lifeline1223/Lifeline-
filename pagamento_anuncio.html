@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Pagamento do Anúncio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      background: #111;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #222;
+    }
+
+    header h1 { font-size: 18px; }
+    .material-icons { cursor: pointer; }
+
+    .container {
+      padding: 20px;
+    }
+
+    .plano {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      cursor: pointer;
+    }
+
+    .plano.active {
+      border: 2px solid #1e90ff;
+      background: #1a1a1a;
+    }
+
+    .popup {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .popup-content {
+      background: #111;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .popup-content h2 {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .opcao {
+      background: #222;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      border: 1px solid #333;
+    }
+
+    .opcao.active {
+      border: 2px solid #1e90ff;
+      background: #1a1a1a;
+    }
+
+    .confirmar-btn {
+      width: 100%;
+      padding: 14px;
+      background: #1e90ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .confirmar-btn:hover {
+      background: #007bff;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div onclick="history.back()"><i class="material-icons">arrow_back</i></div>
+  <h1>Pagamento</h1>
+  <div></div>
+</header>
+
+<div class="container">
+
+  <div class="plano" onclick="abrirPopup('Plano Básico')">
+    <h3>Plano Básico</h3>
+    <p>Duração: 7 dias | Alcance diário inicial</p>
+  </div>
+
+  <div class="plano" onclick="abrirPopup('Plano Intermediário')">
+    <h3>Plano Intermediário</h3>
+    <p>Duração: 7 dias | Alcance ampliado</p>
+  </div>
+
+  <div class="plano" onclick="abrirPopup('Plano Avançado')">
+    <h3>Plano Avançado</h3>
+    <p>Duração: 7 dias | Alcance máximo</p>
+  </div>
+
+</div>
+
+<!-- POPUP DE VALORES -->
+<div class="popup" id="popup">
+  <div class="popup-content" id="popupContent">
+    <h2>Escolha quanto deseja gastar</h2>
+
+    <div class="opcao" onclick="selecionarValor(5, '2mil a 5mil')">
+      <span>€5,00</span>
+      <small>Alcance: 2mil a 5mil</small>
+    </div>
+    <div class="opcao" onclick="selecionarValor(10, '5,4mil a 10mil')">
+      <span>€10,00</span>
+      <small>Alcance: 5,4mil a 10mil</small>
+    </div>
+    <div class="opcao" onclick="selecionarValor(20, '10mil a 25mil')">
+      <span>€20,00</span>
+      <small>Alcance: 10mil a 25mil</small>
+    </div>
+    <div class="opcao" onclick="selecionarValor(50, '20mil a 50mil')">
+      <span>€50,00</span>
+      <small>Alcance: 20mil a 50mil</small>
+    </div>
+    <div class="opcao" onclick="selecionarValor(100, '55mil a 100mil')">
+      <span>€100,00</span>
+      <small>Alcance: 55mil a 100mil</small>
+    </div>
+
+    <button class="confirmar-btn" onclick="confirmarPlano()">Confirmar Plano</button>
+  </div>
+</div>
+
+<script>
+  let planoSelecionado = "";
+  let valorSelecionado = null;
+  let alcanceSelecionado = "";
+
+  function abrirPopup(plano) {
+    planoSelecionado = plano;
+    valorSelecionado = null;
+    alcanceSelecionado = "";
+    document.querySelectorAll('.opcao').forEach(el => el.classList.remove("active"));
+    document.getElementById("popup").style.display = "flex";
+  }
+
+  function selecionarValor(valor, alcance) {
+    valorSelecionado = valor;
+    alcanceSelecionado = alcance;
+
+    document.querySelectorAll('.opcao').forEach(el => el.classList.remove("active"));
+    event.currentTarget.classList.add("active");
+  }
+
+  function confirmarPlano() {
+    if (!valorSelecionado) {
+      alert("Selecione um valor para continuar.");
+      return;
+    }
+
+    // Aplicar taxa de 5%
+    const valorComTaxa = valorSelecionado + (valorSelecionado * 0.05);
+
+    const plano = {
+      tipo: planoSelecionado,
+      valor: parseFloat(valorComTaxa.toFixed(2)),
+      alcance: alcanceSelecionado
+    };
+
+    localStorage.setItem("planoSelecionadoKunta", JSON.stringify(plano));
+    alert("Plano confirmado! Agora adicione um cartão.");
+
+    window.location.href = "cartoes.html";
+  }
+</script>
+
+</body>
+</html>

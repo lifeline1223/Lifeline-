@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Meus Presentes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #111;
+      padding: 14px 16px;
+      border-bottom: 1px solid #222;
+    }
+
+    header h1 {
+      font-size: 18px;
+    }
+
+    .material-icons {
+      cursor: pointer;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .saldo {
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      margin-bottom: 20px;
+      border-left: 4px solid #f48fb1;
+    }
+
+    .saldo h2 {
+      font-size: 16px;
+      margin-bottom: 5px;
+      color: #f48fb1;
+    }
+
+    .saldo p {
+      font-size: 24px;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .historico {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .registro {
+      background: #111;
+      border: 1px solid #333;
+      padding: 14px;
+      border-radius: 10px;
+    }
+
+    .registro span {
+      color: #ccc;
+      font-size: 13px;
+    }
+
+    .registro strong {
+      color: #fff;
+      display: block;
+      margin-top: 5px;
+    }
+
+    .vazio {
+      text-align: center;
+      color: #555;
+      font-size: 14px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div onclick="history.back()">
+    <i class="material-icons">arrow_back</i>
+  </div>
+  <h1>Meus Presentes</h1>
+  <div></div>
+</header>
+
+<div class="container">
+
+  <div class="saldo">
+    <h2>Total de Presentes</h2>
+    <p id="totalPresentes">0 🎁</p>
+  </div>
+
+  <div class="historico" id="listaHistorico">
+    <!-- Registros aparecerão aqui -->
+  </div>
+
+</div>
+
+<script>
+  function carregarDados() {
+    const total = parseInt(localStorage.getItem("presentes") || "0");
+    document.getElementById("totalPresentes").innerText = `${total} 🎁`;
+
+    const historico = JSON.parse(localStorage.getItem("historicoPresentes") || "[]");
+    const lista = document.getElementById("listaHistorico");
+    lista.innerHTML = "";
+
+    if (historico.length === 0) {
+      lista.innerHTML = "<p class='vazio'>Nenhum presente convertido ainda.</p>";
+      return;
+    }
+
+    historico.reverse().forEach(item => {
+      const div = document.createElement("div");
+      div.className = "registro";
+      div.innerHTML = `
+        <span>${item.data}</span>
+        <strong>+${item.quantidade} 🎁 (de ${item.lin} LIN)</strong>
+      `;
+      lista.appendChild(div);
+    });
+  }
+
+  carregarDados();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Privacidade</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid #222;
+    }
+
+    header h1 {
+      font-size: 18px;
+    }
+
+    .material-icons {
+      cursor: pointer;
+      color: #1e90ff;
+    }
+
+    .container {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .card {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .card h2 {
+      font-size: 15px;
+      color: #1e90ff;
+      margin-bottom: 10px;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+    }
+
+    .btn-apagar {
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: 30px;
+      cursor: pointer;
+    }
+
+    .btn-apagar:hover {
+      background: #d32f2f;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div onclick="history.back()"><i class="material-icons">arrow_back</i></div>
+  <h1>Privacidade</h1>
+  <div></div>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>Controles de Privacidade</h2>
+
+    <label>
+      Perfil público
+      <input type="checkbox" id="perfilPublico" checked>
+    </label>
+
+    <label>
+      Permitir mensagens de desconhecidos
+      <input type="checkbox" id="mensagens" checked>
+    </label>
+
+    <label>
+      Mostrar perfil nas buscas
+      <input type="checkbox" id="buscas" checked>
+    </label>
+
+    <label>
+      Notificações de atividade
+      <input type="checkbox" id="notificacoes" checked>
+    </label>
+  </div>
+
+  <button class="btn-apagar" onclick="confirmarExclusao()">Apagar Conta</button>
+
+</div>
+
+<script>
+  function confirmarExclusao() {
+    if (confirm("Tem certeza que deseja apagar sua conta permanentemente? Essa ação não poderá ser desfeita.")) {
+      alert("Conta excluída com sucesso.");
+      // Aqui você pode limpar os dados e redirecionar para a tela de login, por exemplo:
+      // localStorage.clear();
+      // window.location.href = "login.html";
+    }
+  }
+</script>
+
+</body>
+</html>

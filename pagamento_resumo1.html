@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Resumo do Pagamento</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid #222;
+    }
+
+    header h1 { font-size: 18px; }
+    .material-icons { cursor: pointer; }
+
+    .container {
+      padding: 20px;
+    }
+
+    .box {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .box h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .box p {
+      font-size: 14px;
+      color: #ccc;
+      margin-bottom: 6px;
+    }
+
+    .btn-finalizar {
+      background: #1e90ff;
+      color: white;
+      border: none;
+      padding: 14px;
+      width: 100%;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .btn-finalizar:hover {
+      background: #007bff;
+    }
+
+    .alerta {
+      text-align: center;
+      color: #f44336;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div onclick="history.back()"><i class="material-icons">arrow_back</i></div>
+  <h1>Resumo do Pagamento</h1>
+  <div></div>
+</header>
+
+<div class="container">
+
+  <div class="box" id="infoPagamento">
+    <h3>Resumo</h3>
+    <p id="planoNome">Plano: -</p>
+    <p id="preco">Valor: -</p>
+    <p id="cartao">Cartão: -</p>
+  </div>
+
+  <button class="btn-finalizar" onclick="finalizarPagamento()">Finalizar Subscrição</button>
+
+  <p class="alerta" id="mensagemErro" style="display:none;"></p>
+
+</div>
+
+<script>
+  const plano = JSON.parse(localStorage.getItem("planoSelecionado"));
+  const cartao = JSON.parse(localStorage.getItem("cartaoSelecionado"));
+
+  const planoNome = document.getElementById("planoNome");
+  const preco = document.getElementById("preco");
+  const cartaoEl = document.getElementById("cartao");
+  const mensagemErro = document.getElementById("mensagemErro");
+
+  if (plano && cartao) {
+    planoNome.innerText = `Plano: ${plano.nome}`;
+    preco.innerText = `Valor: €${plano.preco.toFixed(2)}`;
+    cartaoEl.innerText = `Cartão: **** **** **** ${cartao.numero.slice(-4)}`;
+  } else {
+    mensagemErro.style.display = "block";
+    mensagemErro.innerText = "Erro: Plano ou cartão não selecionado.";
+    document.querySelector(".btn-finalizar").disabled = true;
+  }
+
+  function finalizarPagamento() {
+    // Salva o plano atual como ativo
+    localStorage.setItem("planoUsuario", plano.nome);
+    // Redireciona para a tela de sucesso
+    window.location.href = "pagamento_sucesso1.html";
+  }
+</script>
+
+</body>
+</html>

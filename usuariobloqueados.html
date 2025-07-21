@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Usuários Bloqueados</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      background-color: #111;
+      border-bottom: 1px solid #333;
+    }
+
+    .back-button {
+      font-size: 24px;
+      margin-right: 12px;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .search-container {
+      padding: 16px;
+    }
+
+    .search-container input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+
+    .list-container {
+      padding: 16px;
+    }
+
+    .user-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #333;
+    }
+
+    .user-name {
+      font-size: 16px;
+    }
+
+    .unblock-btn {
+      background-color: #0066ff;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    /* Notificação */
+    .toast {
+      position: fixed;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #1e1e1e;
+      color: #00ccff;
+      padding: 10px 20px;
+      border-radius: 24px;
+      font-size: 15px;
+      display: none;
+      z-index: 2000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toast de aviso -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Cabeçalho -->
+  <header>
+    <div class="back-button" onclick="voltar()">←</div>
+    <div class="title">Usuários Bloqueados</div>
+  </header>
+
+  <!-- Busca -->
+  <div class="search-container">
+    <input type="text" id="search" onkeyup="filtrar()" placeholder="Procurar nome bloqueado...">
+  </div>
+
+  <!-- Lista de bloqueados -->
+  <div class="list-container" id="bloqueados">
+    <div class="user-item">
+      <div class="user-name">João Silva</div>
+      <button class="unblock-btn" onclick="desbloquear(this, 'João Silva')">Desbloquear</button>
+    </div>
+    <div class="user-item">
+      <div class="user-name">Maria Luísa</div>
+      <button class="unblock-btn" onclick="desbloquear(this, 'Maria Luísa')">Desbloquear</button>
+    </div>
+    <div class="user-item">
+      <div class="user-name">Carlos Andrade</div>
+      <button class="unblock-btn" onclick="desbloquear(this, 'Carlos Andrade')">Desbloquear</button>
+    </div>
+    <!-- Adicione mais bloqueados conforme necessário -->
+  </div>
+
+  <script>
+    function voltar() {
+      window.location.href = "mensagem.html";
+    }
+
+    function desbloquear(button, nome) {
+      const item = button.parentElement;
+      item.remove();
+      mostrarToast(nome + " foi desbloqueado.");
+    }
+
+    function mostrarToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.style.display = "block";
+      setTimeout(() => { toast.style.display = "none"; }, 3000);
+    }
+
+    function filtrar() {
+      const input = document.getElementById("search").value.toLowerCase();
+      const itens = document.querySelectorAll(".user-item");
+
+      itens.forEach(item => {
+        const nome = item.querySelector(".user-name").textContent.toLowerCase();
+        item.style.display = nome.includes(input) ? "flex" : "none";
+      });
+    }
+  </script>
+
+</body>
+</html>

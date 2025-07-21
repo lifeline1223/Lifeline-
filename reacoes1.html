@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Reações do Story</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      background: #111;
+      padding: 10px 15px;
+      font-weight: bold;
+      font-size: 18px;
+      border-bottom: 1px solid #222;
+    }
+    header button {
+      background: none;
+      border: none;
+      color: #1e90ff;
+      font-size: 24px;
+      cursor: pointer;
+      margin-right: 10px;
+      font-weight: normal;
+    }
+    main {
+      padding: 10px 15px;
+      max-height: calc(100vh - 50px);
+      overflow-y: auto;
+    }
+    .usuario-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #222;
+      padding-bottom: 10px;
+    }
+    .usuario-item img {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid #1e90ff;
+      margin-right: 15px;
+      object-fit: cover;
+    }
+    .usuario-nome {
+      flex: 1;
+      font-size: 16px;
+    }
+    .coracao {
+      font-size: 28px;
+      color: red;
+      margin-left: 10px;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <button onclick="voltar()">←</button>
+  Reações do Story
+</header>
+
+<main id="listaReacoes">
+  <!-- Lista será preenchida via JS -->
+</main>
+
+<script>
+  // Simulação de dados para 10 stories
+  // Cada índice representa um story (0 = story 1, 1 = story 2, etc)
+  // Cada story tem uma lista de usuários que viram e/ou reagiram
+  const dadosStories = [
+    [ // Story 1
+      {nome: "Maria Cristina", foto:"perfil1.jpg", reagiu: true},
+      {nome: "Alex Neto", foto:"perfil2.jpg", reagiu: false},
+      {nome: "João Silva", foto:"perfil3.jpg", reagiu: true},
+    ],
+    [ // Story 2
+      {nome: "Ana Beatriz", foto:"perfil4.jpg", reagiu: false},
+      {nome: "Carlos Alberto", foto:"perfil5.jpg", reagiu: true},
+    ],
+    [ // Story 3
+      {nome: "Lucas Martins", foto:"perfil6.jpg", reagiu: false},
+      {nome: "Fernanda Lima", foto:"perfil7.jpg", reagiu: false},
+      {nome: "Paulo Santos", foto:"perfil8.jpg", reagiu: true},
+      {nome: "Carla Souza", foto:"perfil9.jpg", reagiu: true},
+    ],
+    // Stories 4 até 10 podem ser vazios ou repetidos (exemplo vazio)
+    [], [], [], [], [], [], []
+  ];
+
+  function voltar() {
+    // Voltar para a página dos stories
+    window.location.href = "storis.html";
+  }
+
+  function getParametroURL(nome) {
+    const params = new URLSearchParams(window.location.search);
+    return params.get(nome);
+  }
+
+  function carregarLista(storyIndex) {
+    const lista = document.getElementById("listaReacoes");
+    lista.innerHTML = "";
+
+    if(storyIndex === null || storyIndex < 1 || storyIndex > dadosStories.length){
+      lista.innerHTML = "<p>Nenhum story selecionado ou inválido.</p>";
+      return;
+    }
+
+    // Ajusta para índice zero-based
+    const usuarios = dadosStories[storyIndex - 1];
+
+    if(usuarios.length === 0){
+      lista.innerHTML = "<p>Sem reações para este story.</p>";
+      return;
+    }
+
+    usuarios.forEach(u => {
+      const item = document.createElement("div");
+      item.classList.add("usuario-item");
+
+      const img = document.createElement("img");
+      img.src = u.foto;
+      img.alt = u.nome;
+
+      const nome = document.createElement("div");
+      nome.classList.add("usuario-nome");
+      nome.textContent = u.nome;
+
+      item.appendChild(img);
+      item.appendChild(nome);
+
+      if(u.reagiu){
+        const coracao = document.createElement("div");
+        coracao.classList.add("coracao");
+        coracao.textContent = "❤️";
+        item.appendChild(coracao);
+      }
+
+      lista.appendChild(item);
+    });
+  }
+
+  // Ao carregar a página, lê o parâmetro e carrega a lista
+  window.onload = () => {
+    const storyParam = getParametroURL("story");
+    const storyNum = storyParam ? parseInt(storyParam) : null;
+    carregarLista(storyNum);
+  };
+</script>
+
+</body>
+</html>

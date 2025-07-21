@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Verificação</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <style>
+    body {
+      background: #111111;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: #1e1e1e;
+      padding: 32px 20px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 400px;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    .voltar {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      width: 32px;
+      height: 32px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .voltar svg {
+      width: 28px;
+      height: 28px;
+      fill: #00aaff;
+      transition: transform 0.2s;
+    }
+
+    .voltar:hover svg {
+      transform: translateX(-4px);
+    }
+
+    h2 {
+      text-align: center;
+      font-weight: 500;
+      margin-bottom: 16px;
+      margin-top: 12px;
+    }
+
+    p {
+      font-size: 14px;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #ccc;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 16px;
+      border: 1px solid #333;
+      border-radius: 10px;
+      background: #2a2a2a;
+      color: #fff;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #0077ff;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #005fcc;
+    }
+
+    .link {
+      color: #00aaff;
+      text-align: center;
+      margin-top: 16px;
+      display: block;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    #mensagem {
+      text-align: center;
+      margin-top: 10px;
+      color: #ffcc00;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <a id="voltarLink" class="voltar" title="Voltar">
+    <svg viewBox="0 0 24 24">
+      <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/>
+    </svg>
+  </a>
+
+  <h2>Verificação</h2>
+  <p>Insira o código que foi enviado ao seu número.</p>
+
+  <input type="text" id="codigo" placeholder="Digite o código" maxlength="6" />
+  <button onclick="validar()">Finalizar Cadastro</button>
+  <span class="link" onclick="reenviar()" id="reenviarLink">Reenviar código</span>
+
+  <div id="mensagem"></div>
+</div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCIxyvUWuPDwsUhJpajyBuZuVRmNFbbTBk",
+    authDomain: "lifeline-78bce.firebaseapp.com",
+    projectId: "lifeline-78bce",
+    storageBucket: "lifeline-78bce.appspot.com",
+    messagingSenderId: "415768649474",
+    appId: "1:415768649474:web:58256fd83b17f13fdadbd8",
+    databaseURL: "https://lifeline-78bce-default-rtdb.firebaseio.com"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const auth = firebase.auth();
+
+  const params = new URLSearchParams(window.location.search);
+  const telefone = params.get("telefone");
+
+  document.getElementById("voltarLink").href = "completar.html?telefone=" + encodeURIComponent(telefone);
+
+  const mensagem = (txt, cor = "#ffcc00") => {
+    const el = document.getElementById("mensagem");
+    el.style.color = cor;
+    el.textContent = txt;
+  };
+
+  let verificationId = null;
+
+  db.ref("verificacoes/" + telefone).once("value").then(snapshot => {
+    if (snapshot.exists()) {
+      verificationId = snapshot.val().verificationId;
+    } else {
+      mensagem("Código de verificação não encontrado.", "#ff4444");
+    }
+  });
+
+  function validar() {
+    const codigo = document.getElementById("codigo").value.trim();
+
+    if (!codigo || codigo.length !== 6) {
+      mensagem("Código inválido.", "#ff4444");
+      return;
+    }
+
+    if (!verificationId) {
+      mensagem("Não foi possível validar o código.", "#ff4444");
+      return;
+    }
+
+    const credential = firebase.auth.PhoneAuthProvider.credential(verificationId, codigo);
+
+    auth.signInWithCredential(credential)
+      .then(() => {
+        const dados = JSON.parse(localStorage.getItem("kuntaCadastroCompleto"));
+
+        if (!dados || !dados.telefone) {
+          mensagem("Dados do cadastro não encontrados.", "#ff4444");
+          return;
+        }
+
+        firebase.auth().createUserWithEmailAndPassword(dados.email, dados.senha)
+          .then(() => {
+            db.ref("usuarios/" + dados.telefone).set(dados).then(() => {
+              localStorage.setItem("usuarioLogado", dados.telefone);
+              localStorage.removeItem("kuntaCadastroCompleto");
+              mensagem("Cadastro concluído com sucesso!", "#00cc88");
+              setTimeout(() => window.location.href = "feed.html", 1500);
+            });
+          })
+          .catch(error => {
+            mensagem("Erro ao criar usuário: " + error.message, "#ff4444");
+          });
+      })
+      .catch(error => {
+        mensagem("Código incorreto: " + error.message, "#ff4444");
+      });
+  }
+
+  function reenviar() {
+    const tempoUltimoEnvio = localStorage.getItem("ultimoEnvioSMS_" + telefone);
+    const agora = Date.now();
+    const intervalo = 90 * 1000;
+
+    if (tempoUltimoEnvio && agora - parseInt(tempoUltimoEnvio) < intervalo) {
+      const restante = intervalo - (agora - parseInt(tempoUltimoEnvio));
+      iniciarContagemRegressiva(restante);
+      return;
+    }
+
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("mensagem", { size: "invisible" });
+
+    auth.signInWithPhoneNumber(telefone, window.recaptchaVerifier)
+      .then((result) => {
+        const newVerificationId = result.verificationId;
+        db.ref("verificacoes/" + telefone).set({ verificationId: newVerificationId });
+        localStorage.setItem("ultimoEnvioSMS_" + telefone, agora.toString());
+        mensagem("Novo código enviado!", "#00cc88");
+        iniciarContagemRegressiva(intervalo);
+      })
+      .catch((error) => {
+        mensagem("Erro ao reenviar: " + error.message, "#ff4444");
+      });
+  }
+
+  function iniciarContagemRegressiva(ms) {
+    const link = document.getElementById("reenviarLink");
+    link.style.pointerEvents = "none";
+    let tempo = Math.ceil(ms / 1000);
+
+    const intervalo = setInterval(() => {
+      tempo--;
+      link.textContent = `Aguarde ${tempo}s para reenviar`;
+
+      if (tempo <= 0) {
+        clearInterval(intervalo);
+        link.textContent = "Reenviar código";
+        link.style.pointerEvents = "auto";
+      }
+    }, 1000);
+  }
+</script>
+
+</body>
+</html>

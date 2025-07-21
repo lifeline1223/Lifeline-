@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Line - Conferência</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: white;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px;
+      background-color: #111;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+    }
+    <header>
+  <strong id="tema">Tema da Live</strong> - por <span id="autor">Desconhecido</span><br>
+  👥 <span id="contador">0</span> assistindo agora
+</header>
+
+    .header-left i { font-size: 20px; }
+    .header-left span { font-weight: bold; font-size: 16px; }
+
+    .live-btn {
+      background-color: red;
+      color: white;
+      border-radius: 50%;
+      padding: 10px;
+      animation: pulse 1.5s infinite;
+      cursor: pointer;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(255, 0, 0, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+    }
+
+    .scroll-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #222;
+      padding: 10px 15px;
+    }
+
+    .scroll-users {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+    }
+
+    .scroll-users .user {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #444;
+      border: 2px solid red;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .invite-btn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .conference-title {
+      text-align: center;
+      padding: 10px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .content {
+      background: #000;
+      height: 63%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .content-info {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+    }
+
+    .content-info h4 {
+      margin: 0;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .content-info button {
+      margin-top: 5px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    .bottom-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: #111;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .comment-box {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background-color: #222;
+      border-radius: 20px;
+      padding: 5px 10px;
+    }
+
+    .comment-box input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: white;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .comment-box .material-icons {
+      cursor: pointer;
+      color: #00aaff;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .actions .material-icons {
+      font-size: 24px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .actions .speak.active { color: #00ff00; }
+    .actions .gift { color: orange; }
+
+    .chat-messages {
+      position: absolute;
+      bottom: 60px;
+      right: 10px;
+      text-align: right;
+      max-height: 100px;
+      overflow-y: auto;
+      font-size: 13px;
+    }
+
+    .chat-messages p {
+      background: rgba(255,255,255,0.1);
+      display: inline-block;
+      padding: 4px 8px;
+      margin-bottom: 4px;
+      border-radius: 5px;
+    }
+
+    .presentes {
+      position: absolute;
+      bottom: 60px;
+      left: 0;
+      width: 100%;
+      pointer-events: none;
+    }
+
+    .presente {
+      position: absolute;
+      font-size: 30px;
+      animation: subir 2s ease-out forwards;
+    }
+
+    @keyframes subir {
+      0% { bottom: 60px; opacity: 1; }
+      100% { bottom: 300px; opacity: 0; }
+    }
+
+    .popup-alerta {
+      position: absolute;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #222;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #000;
+      z-index: 9999;
+      font-size: 14px;
+      animation: fade 2s forwards;
+    }
+
+    @keyframes fade {
+      0% { opacity: 0; transform: translate(-50%, -60%); }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; transform: translate(-50%, -50%); }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left" onclick="location.href='feed.html'">
+      <i class="material-icons">arrow_back</i>
+      <span>Line</span>
+    </div>
+    <i class="material-icons live-btn" onclick="location.href='criar_conferencia.html'">videocam</i>
+  </div>
+
+  <div class="scroll-section">
+    <div class="scroll-users">
+      <div class="user" onclick="entrarConferencia('Marta', 'Conversa com seguidores')"></div>
+      <div class="user" onclick="entrarConferencia('Carlos', 'Discussão sobre tecnologia')"></div>
+    </div>
+    <button class="invite-btn" onclick="location.href='partilhar.html'">
+      <i class="material-icons">person_add</i> Convidar
+    </button>
+  </div>
+
+  <div class="conference-title" id="tema">Conferência Pública - Tema Atual</div>
+
+  <div class="content" id="content">
+    <div class="content-info">
+      <h4 id="autor" onclick="location.href='usuario.html'">João Salvador</h4>
+      <button id="followBtn" onclick="toggleFollow()">Seguir</button>
+    </div>
+    <div class="chat-messages" id="chat"></div>
+    <div class="presentes" id="presentes"></div>
+  </div>
+
+  <div class="bottom-bar">
+    <div class="comment-box">
+      <input type="text" id="msgInput" placeholder="Comente aqui...">
+      <i class="material-icons" onclick="enviarMensagem()">send</i>
+    </div>
+    <div class="actions">
+      <i class="material-icons" onclick="enviarCorações()">thumb_up</i>
+      <i class="material-icons" onclick="mostrarPopup()">notifications</i>
+      <i class="material-icons speak" onclick="toggleFala(this)">record_voice_over</i>
+      <i class="material-icons gift" onclick="enviarPresentes()">card_giftcard</i>
+    </div>
+  </div>
+
+  <script>
+    const supabase = supabase.createClient(
+      "https://wjstmoylolxmsrjubcjg.supabase.co",
+      "AIzaSyCIxyvUWuPDwsUhJpajyBuZuVRmNFbbTBk"
+    );
+
+    let usuarioAtual = "João Salvador";
+
+    async function entrarConferencia(nome, tema) {
+      localStorage.setItem("conferencia_nome", nome);
+      localStorage.setItem("conferencia_tema", tema);
+      location.reload();
+    }
+
+    window.onload = async () => {
+      usuarioAtual = localStorage.getItem("conferencia_nome") || "João Salvador";
+      const tema = localStorage.getItem("conferencia_tema") || "Conferência Pública - Tema Atual";
+      document.getElementById("autor").innerText = usuarioAtual;
+      document.getElementById("tema").innerText = tema;
+
+      const { data } = await supabase
+        .from("mensagens")
+        .select("*")
+        .eq("autor", usuarioAtual)
+        .order("criado_em", { ascending: true });
+
+      const chat = document.getElementById("chat");
+      data?.forEach(msg => {
+        const p = document.createElement("p");
+        p.textContent = msg.autor + ": " + msg.texto;
+        chat.appendChild(p);
+      });
+
+      const { data: seg } = await supabase
+        .from("seguidores")
+        .select("*")
+        .eq("seguido", usuarioAtual);
+
+      if (seg?.length > 0) {
+        const btn = document.getElementById("followBtn");
+        btn.innerText = "Seguindo";
+        btn.style.background = "#555";
+      }
+    };
+
+    async function toggleFollow() {
+      const btn = document.getElementById("followBtn");
+      const seguindo = btn.innerText === "Seguindo";
+
+      if (seguindo) {
+        await supabase
+          .from("seguidores")
+          .delete()
+          .eq("seguido", usuarioAtual);
+        btn.innerText = "Seguir";
+        btn.style.background = "#007bff";
+      } else {
+        await supabase
+          .from("seguidores")
+          .insert([{ seguido: usuarioAtual, usuario: "visitante" }]);
+        btn.innerText = "Seguindo";
+        btn.style.background = "#555";
+      }
+    }
+
+    async function enviarMensagem() {
+      const input = document.getElementById("msgInput");
+      const texto = input.value.trim();
+      if (!texto) return;
+
+      await supabase.from("mensagens").insert([
+        { texto: texto, autor: usuarioAtual, criado_em: new Date() }
+      ]);
+
+      const p = document.createElement("p");
+      p.textContent = usuarioAtual + ": " + texto;
+      document.getElementById("chat").appendChild(p);
+      input.value = "";
+    }
+
+    function enviarCorações() {
+      for (let i = 0; i < 5; i++) {
+        const heart = document.createElement("div");
+        heart.textContent = "❤️";
+        heart.className = "presente";
+        heart.style.left = Math.random() * 90 + "%";
+        document.getElementById("presentes").appendChild(heart);
+        setTimeout(() => heart.remove(), 2000);
+      }
+    }
+
+    function mostrarPopup() {
+      const popup = document.createElement("div");
+      popup.className = "popup-alerta";
+      popup.innerText = `Solicitação de fala enviada para ${usuarioAtual}`;
+      document.body.appendChild(popup);
+      setTimeout(() => popup.remove(), 3000);
+    }
+
+    function toggleFala(el) {
+      el.classList.toggle("active");
+      const popup = document.createElement("div");
+      popup.className = "popup-alerta";
+      popup.innerText = el.classList.contains("active") ? "Microfone Ativado" : "Microfone Desligado";
+      document.body.appendChild(popup);
+      setTimeout(() => popup.remove(), 3000);
+    }
+
+    function enviarPresentes() {
+      for (let i = 0; i < 6; i++) {
+        const gift = document.createElement("div");
+        gift.textContent = "🎁";
+        gift.className = "presente";
+        gift.style.left = Math.random() * 90 + "%";
+        document.getElementById("presentes").appendChild(gift);
+        setTimeout(() => gift.remove(), 2000);
+      }
+    }
+  </script><script>
+  const supabase = supabase.createClient(
+    "https://wjstmoylolxmsrjubcjg.supabase.co",
+    "AIzaSyCIxyvUWuPDwsUhJpajyBuZuVRmNFbbTBk"
+  );
+
+  const nome = localStorage.getItem("conferencia_nome") || "Visitante";
+  const tema = localStorage.getItem("conferencia_tema") || "Conferência Pública";
+  const userId = crypto.randomUUID(); // identificador único para presença
+
+  document.getElementById("autor").textContent = nome;
+  document.getElementById("tema").textContent = tema;
+
+  async function adicionarPresenca() {
+    await supabase.from("presencas").insert([{ id: userId, usuario: nome }]);
+  }
+
+  async function removerPresenca() {
+    await supabase.from("presencas").delete().eq("id", userId);
+  }
+
+  async function atualizarContador() {
+    const { count } = await supabase
+      .from("presencas")
+      .select("*", { count: "exact", head: true });
+    document.getElementById("contador").textContent = count || 0;
+  }
+
+  function escutarContador() {
+    supabase
+      .channel("presenca-canal")
+      .on("postgres_changes", {
+        event: "*",
+        schema: "public",
+        table: "presencas"
+      }, () => {
+        atualizarContador();
+      })
+      .subscribe();
+  }
+
+  window.onload = async () => {
+    await adicionarPresenca();
+    await atualizarContador();
+    escutarContador();
+    carregarMensagens();
+    realtime();
+  };
+
+  window.onbeforeunload = async () => {
+    await removerPresenca();
+  };
+</script>
+</body>
+</html>

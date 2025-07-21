@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Comprar Lin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #111;
+      padding: 14px 16px;
+      border-bottom: 1px solid #222;
+    }
+
+    header h1 {
+      font-size: 18px;
+    }
+
+    .container {
+      margin-top: 30px;
+    }
+
+    label {
+      font-size: 14px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      border: none;
+      background: #1a1a1a;
+      color: #fff;
+    }
+
+    .btn-comprar {
+      width: 100%;
+      background: #1e90ff;
+      color: white;
+      border: none;
+      padding: 14px;
+      font-size: 15px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .btn-comprar:hover {
+      background: #007bff;
+    }
+
+    .status {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #1e90ff;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div onclick="history.back()"><i class="material-icons">arrow_back</i></div>
+    <h1>Comprar Lin</h1>
+    <div></div>
+  </header>
+
+  <div class="container">
+    <label for="valor">Valor em € (Euro)</label>
+    <input type="number" id="valor" placeholder="Ex: 5.00" min="1" step="0.01">
+
+    <label for="cartao">Escolher cartão</label>
+    <select id="cartao">
+      <!-- Opções inseridas via JS -->
+    </select>
+
+    <button class="btn-comprar" onclick="comprarLin()">Confirmar Compra</button>
+
+    <div class="status" id="statusMsg"></div>
+  </div>
+
+  <script>
+    const listaCartoes = JSON.parse(localStorage.getItem("cartoesKunta") || "[]");
+    const select = document.getElementById("cartao");
+    const statusMsg = document.getElementById("statusMsg");
+
+    // Preencher cartões salvos
+    listaCartoes.forEach((c, i) => {
+      const opt = document.createElement("option");
+      opt.value = i;
+      opt.textContent = `**** **** **** ${c.numero.slice(-4)} (${c.titular})`;
+      select.appendChild(opt);
+    });
+
+    function comprarLin() {
+      const valor = parseFloat(document.getElementById("valor").value);
+      const index = select.value;
+
+      if (!valor || valor <= 0) {
+        alert("Informe um valor válido em euro.");
+        return;
+      }
+
+      if (index === "") {
+        alert("Escolha um cartão válido.");
+        return;
+      }
+
+      statusMsg.textContent = "Processando pagamento...";
+      setTimeout(() => {
+        const sucesso = Math.random() < 0.9; // 90% chance de sucesso
+
+        if (sucesso) {
+          let saldoLin = parseFloat(localStorage.getItem("saldoLin") || "0");
+          const quantidade = valor * 10; // Ex: 1€ = 10 Lin (ajustável)
+
+          saldoLin += quantidade;
+          localStorage.setItem("saldoLin", saldoLin.toFixed(2));
+          statusMsg.textContent = `✅ Compra aprovada! ${quantidade.toFixed(2)} Lin adicionados.`;
+        } else {
+          statusMsg.textContent = "❌ Falha no pagamento. Tente novamente.";
+        }
+      }, 2000);
+    }
+  </script>
+
+</body>
+</html>

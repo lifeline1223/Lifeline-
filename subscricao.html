@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Subscrição</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+    header {
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid #222;
+    }
+    header h1 { font-size: 18px; }
+    .material-icons { cursor: pointer; }
+    .container {
+      padding: 20px;
+    }
+    .plano-atual {
+      background: #1e1e1e;
+      padding: 16px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border-left: 4px solid #1e90ff;
+    }
+    .plano-atual h2 {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+    .plano-atual p {
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    .planos {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .plano {
+      background: #111;
+      border: 1px solid #333;
+      padding: 16px;
+      border-radius: 10px;
+    }
+
+    .plano h3 {
+      font-size: 15px;
+      margin-bottom: 8px;
+      color: #1e90ff;
+    }
+
+    .plano ul {
+      font-size: 13px;
+      color: #ccc;
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .plano ul li {
+      margin-bottom: 6px;
+    }
+
+    .btn-assinar {
+      margin-top: 10px;
+      background: #1e90ff;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .btn-assinar:hover {
+      background: #007bff;
+    }
+
+    /* POPUP de confirmação */
+    .popup-confirm {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .popup-box {
+      background: #111;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .popup-box p {
+      margin-bottom: 20px;
+      font-size: 15px;
+    }
+
+    .popup-box button {
+      padding: 10px 16px;
+      margin: 0 5px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .btn-sim {
+      background: #1e90ff;
+      color: #fff;
+    }
+
+    .btn-nao {
+      background: #333;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div onclick="history.back()"><i class="material-icons">arrow_back</i></div>
+  <h1>Subscrição</h1>
+  <div></div>
+</header>
+
+<div class="container">
+
+  <div class="plano-atual" id="planoAtual">
+    <h2>Plano Atual: Grátis</h2>
+    <p>Aproveite recursos básicos sem custo</p>
+  </div>
+
+  <div class="planos">
+
+    <div class="plano">
+      <h3>Plano Premium</h3>
+      <ul>
+        <li>✔ Acesso a estatísticas detalhadas</li>
+        <li>✔ Publicações em destaque</li>
+        <li>✔ Guardar conteúdos ilimitadamente</li>
+      </ul>
+      <button class="btn-assinar" onclick="assinarPlano('Premium', 4.99)">Assinar Premium – €4,99</button>
+    </div>
+
+    <div class="plano">
+      <h3>Plano Criador</h3>
+      <ul>
+        <li>✔ Ganhos com visualizações</li>
+        <li>✔ Painel de monetização</li>
+        <li>✔ Ferramentas avançadas de conteúdo</li>
+      </ul>
+      <button class="btn-assinar" onclick="assinarPlano('Criador', 6.99)">Tornar Criador – €6,99</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- POPUP CONFIRMAÇÃO -->
+<div class="popup-confirm" id="popupConfirm">
+  <div class="popup-box">
+    <p id="textoConfirmacao">Confirmar assinatura?</p>
+    <button class="btn-sim" onclick="confirmarSim()">Sim</button>
+    <button class="btn-nao" onclick="fecharPopup()">Cancelar</button>
+  </div>
+</div>
+
+<script>
+  let planoTemp = null;
+
+  function assinarPlano(nome, preco) {
+    planoTemp = { nome: `Plano ${nome}`, preco: preco };
+    document.getElementById("textoConfirmacao").innerText =
+      `Confirmar assinatura do ${planoTemp.nome} por €${planoTemp.preco.toFixed(2)}?`;
+    document.getElementById("popupConfirm").style.display = "flex";
+  }
+
+  function confirmarSim() {
+    localStorage.setItem("planoSelecionado", JSON.stringify(planoTemp));
+    localStorage.setItem("planoUsuario", planoTemp.nome.replace("Plano ", ""));
+    window.location.href = "cartoes1.html";
+  }
+
+  function fecharPopup() {
+    document.getElementById("popupConfirm").style.display = "none";
+    planoTemp = null;
+  }
+
+  function mostrarPlanoAtual() {
+    const plano = localStorage.getItem("planoUsuario") || "Grátis";
+    const planoAtual = document.getElementById("planoAtual");
+
+    let descricao = "Aproveite recursos básicos sem custo";
+    if (plano === "Premium") {
+      descricao = "Você tem acesso a recursos avançados como estatísticas e destaques.";
+    } else if (plano === "Criador") {
+      descricao = "Você é um criador com acesso à monetização e ferramentas avançadas.";
+    }
+
+    planoAtual.innerHTML = `
+      <h2>Plano Atual: ${plano}</h2>
+      <p>${descricao}</p>
+    `;
+  }
+
+  mostrarPlanoAtual();
+</script>
+
+</body>
+</html>

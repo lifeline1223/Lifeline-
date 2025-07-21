@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Definições de Mensagens</title>
+  <style>
+    body {
+      margin: 0; padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #fff;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      background-color: #111;
+      border-bottom: 1px solid #333;
+    }
+    .back-button {
+      font-size: 24px;
+      margin-right: 12px;
+      cursor: pointer;
+      color: #fff;
+    }
+    .title {
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .settings-container {
+      padding: 16px;
+    }
+    .setting-item {
+      padding: 14px 0;
+      border-bottom: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    .setting-item span {
+      font-size: 16px;
+    }
+    .arrow {
+      font-size: 20px;
+      color: #888;
+    }
+
+    /* Popups */
+    .popup-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .popup {
+      background: #222;
+      padding: 24px;
+      width: 90%;
+      max-width: 320px;
+      border-radius: 12px;
+      color: #eee;
+      text-align: center;
+    }
+    .popup h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+    .popup p {
+      margin-bottom: 24px;
+    }
+    .popup button {
+      background-color: #0066ff;
+      border: none;
+      color: white;
+      padding: 10px 24px;
+      border-radius: 24px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .popup .cancel-btn {
+      background-color: #555;
+      margin-left: 10px;
+    }
+
+    .floating-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 10px;
+    }
+    .floating-buttons button {
+      background-color: #222;
+      border: 2px solid #0066ff;
+      color: #0066ff;
+      padding: 10px 16px;
+      border-radius: 24px;
+      cursor: pointer;
+    }
+    .floating-buttons button.active {
+      background-color: #0066ff;
+      color: white;
+    }
+
+    /* Notificação */
+    .toast {
+      position: fixed;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #1e1e1e;
+      color: #00ccff;
+      padding: 10px 20px;
+      border-radius: 24px;
+      font-size: 15px;
+      display: none;
+      z-index: 2000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Notificação -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Cabeçalho -->
+  <header>
+    <div class="back-button" onclick="voltar()">←</div>
+    <div class="title">Definições de Mensagens</div>
+  </header>
+
+  <div class="settings-container">
+    <div class="setting-item" onclick="window.location.href='enviarmensagem.html'">
+      <span>Permitir mensagens</span>
+      <span class="arrow">›</span>
+    </div>
+
+    <div class="setting-item" onclick="abrirPopup('solicitacoes')">
+      <span>Solicitações de mensagens</span>
+      <span class="arrow">›</span>
+    </div>
+
+    <div class="setting-item" onclick="abrirPopup('silenciar')">
+      <span>Silenciar mensagens de desconhecidos</span>
+      <span class="arrow">›</span>
+    </div>
+
+    <div class="setting-item" onclick="abrirPopup('statusLeitura')">
+      <span>Mostrar status de leitura</span>
+      <span class="arrow">›</span>
+    </div>
+
+    <div class="setting-item" onclick="window.location.href='bloquear.html'">
+      <span>Bloquear contatos</span>
+      <span class="arrow">›</span>
+    </div>
+
+    <div class="setting-item" onclick="abrirPopup('limparHistorico')">
+      <span>Limpar histórico de mensagens</span>
+      <span class="arrow">›</span>
+    </div>
+  </div>
+
+  <!-- POPUPS -->
+
+  <!-- Solicitações -->
+  <div class="popup-overlay" id="popup-solicitacoes">
+    <div class="popup">
+      <h3>Solicitações de mensagens</h3>
+      <p>Você quer permitir que pessoas que não são seus contatos enviem mensagens?</p>
+      <button onclick="mostrarToast('Solicitações ativadas!'); fecharPopup('popup-solicitacoes')">Ativar</button>
+      <button class="cancel-btn" onclick="fecharPopup('popup-solicitacoes')">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- Silenciar -->
+  <div class="popup-overlay" id="popup-silenciar">
+    <div class="popup">
+      <h3>Silenciar mensagens desconhecidas</h3>
+      <p>Deseja silenciar mensagens de pessoas que não estão nos seus contatos?</p>
+      <button onclick="mostrarToast('Mensagens de desconhecidos silenciadas!'); fecharPopup('popup-silenciar')">Ativar</button>
+      <button class="cancel-btn" onclick="fecharPopup('popup-silenciar')">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- Status de leitura -->
+  <div class="popup-overlay" id="popup-statusLeitura">
+    <div class="popup">
+      <h3>Status de leitura</h3>
+      <p>Deseja mostrar ou esconder o status de leitura das suas mensagens?</p>
+      <div class="floating-buttons">
+        <button id="mostrarBtn" class="active" onclick="selecionarStatus(this, 'Mostrar')">Mostrar</button>
+        <button id="esconderBtn" onclick="selecionarStatus(this, 'Esconder')">Esconder</button>
+      </div>
+      <button class="cancel-btn" style="margin-top:20px;" onclick="fecharPopup('popup-statusLeitura')">Fechar</button>
+    </div>
+  </div>
+
+  <!-- Limpar histórico -->
+  <div class="popup-overlay" id="popup-limparHistorico">
+    <div class="popup">
+      <h3>Limpar histórico</h3>
+      <p>Tem certeza que deseja apagar todas as mensagens?</p>
+      <button onclick="mostrarToast('Histórico limpo.'); fecharPopup('popup-limparHistorico'); voltar()">Sim</button>
+      <button class="cancel-btn" onclick="fecharPopup('popup-limparHistorico')">Não</button>
+    </div>
+  </div>
+
+  <script>
+    function voltar() {
+      window.location.href = "mensagem.html";
+    }
+
+    function abrirPopup(nome) {
+      document.getElementById("popup-" + nome).style.display = "flex";
+    }
+
+    function fecharPopup(id) {
+      document.getElementById(id).style.display = "none";
+    }
+
+    function mostrarToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.style.display = "block";
+      setTimeout(() => { toast.style.display = "none"; }, 3000);
+    }
+
+    function selecionarStatus(botao, texto) {
+      document.getElementById('mostrarBtn').classList.remove('active');
+      document.getElementById('esconderBtn').classList.remove('active');
+      botao.classList.add('active');
+      mostrarToast("Status de leitura: " + texto);
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Presentes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #111;
+      padding: 14px 16px;
+      border-bottom: 1px solid #222;
+    }
+
+    header h1 {
+      font-size: 18px;
+    }
+
+    .material-icons {
+      color: #1e90ff;
+      cursor: pointer;
+    }
+
+    .container {
+      padding: 16px;
+    }
+
+    .filtros {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .filtro-btn {
+      padding: 8px 16px;
+      background: #1e1e1e;
+      color: #ccc;
+      border: 1px solid #333;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .filtro-btn.active {
+      background: #1e90ff;
+      color: #fff;
+      border-color: #1e90ff;
+    }
+
+    .presente-card {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 15px;
+    }
+
+    .presente-card h3 {
+      margin-bottom: 6px;
+      font-size: 16px;
+      color: #1e90ff;
+    }
+
+    .presente-card p {
+      font-size: 13px;
+      color: #aaa;
+      margin-bottom: 4px;
+    }
+
+    .detalhes {
+      font-size: 13px;
+      color: #4caf50;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div onclick="history.back()"><i class="material-icons">arrow_back</i></div>
+  <h1>Presentes</h1>
+  <div></div>
+</header>
+
+<div class="container">
+
+  <!-- Filtros -->
+  <div class="filtros">
+    <button class="filtro-btn active" onclick="filtrar('todos')">Todos</button>
+    <button class="filtro-btn" onclick="filtrar('recebidos')">Recebidos</button>
+    <button class="filtro-btn" onclick="filtrar('enviados')">Enviados</button>
+  </div>
+
+  <!-- Lista de presentes -->
+  <div id="listaPresentes">
+
+    <!-- Exemplo de cartão -->
+    <div class="presente-card" data-tipo="recebido">
+      <h3>Presente Rosa Digital</h3>
+      <p>Recebido de @maria_92</p>
+      <p>Valor: 20 LIN (≈ €1,00)</p>
+      <p class="detalhes">Você ganhou este presente ao vivo</p>
+    </div>
+
+    <div class="presente-card" data-tipo="enviado">
+      <h3>Presente Estrela Dourada</h3>
+      <p>Enviado para @joao_music</p>
+      <p>Valor: 50 LIN (≈ €2,50)</p>
+      <p class="detalhes">Este presente foi utilizado por 12 pessoas e gerou €5,00</p>
+    </div>
+
+    <div class="presente-card" data-tipo="recebido">
+      <h3>Presente Coração Azul</h3>
+      <p>Recebido de @luzia_king</p>
+      <p>Valor: 30 LIN (≈ €1,50)</p>
+      <p class="detalhes">Ganhos por este presente: €1,50</p>
+    </div>
+
+    <div class="presente-card" data-tipo="enviado">
+      <h3>Presente Aplauso</h3>
+      <p>Enviado para @daniel_stream</p>
+      <p>Valor: 10 LIN (≈ €0,50)</p>
+      <p class="detalhes">Usado por 3 pessoas – total gerado: €1,20</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function filtrar(tipo) {
+    const botoes = document.querySelectorAll('.filtro-btn');
+    botoes.forEach(btn => btn.classList.remove('active'));
+
+    if (tipo === 'todos') {
+      botoes[0].classList.add('active');
+    } else if (tipo === 'recebidos') {
+      botoes[1].classList.add('active');
+    } else if (tipo === 'enviados') {
+      botoes[2].classList.add('active');
+    }
+
+    const cards = document.querySelectorAll('.presente-card');
+    cards.forEach(card => {
+      const tipoCard = card.getAttribute('data-tipo');
+      if (tipo === 'todos' || tipo === tipoCard) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+</script>
+
+</body>
+</html>

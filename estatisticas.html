@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Estatísticas da Conta</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid #222;
+    }
+
+    header h1 {
+      font-size: 18px;
+    }
+
+    .material-icons {
+      cursor: pointer;
+      color: #1e90ff;
+    }
+
+    .conteudo {
+      padding: 16px;
+    }
+
+    .card {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .card h2 {
+      font-size: 15px;
+      color: #1e90ff;
+      margin-bottom: 8px;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    .dado {
+      font-size: 14px;
+      color: #ccc;
+      margin-bottom: 5px;
+    }
+
+    .destaque {
+      font-weight: bold;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div onclick="history.back()"><i class="material-icons">arrow_back</i></div>
+  <h1>Estatísticas</h1>
+  <div></div>
+</header>
+
+<div class="conteudo">
+
+  <div class="card">
+    <h2>Visualizações por Semana</h2>
+    <canvas id="graficoVisualizacoes"></canvas>
+  </div>
+
+  <div class="card">
+    <h2>Gênero do Público</h2>
+    <canvas id="graficoGenero"></canvas>
+  </div>
+
+  <div class="card">
+    <h2>Visualizações por País</h2>
+    <canvas id="graficoPaises"></canvas>
+  </div>
+
+  <div class="card">
+    <h2>Ganhos Estimados</h2>
+    <div class="dado">€ <span class="destaque">112,40</span> (Euros)</div>
+    <div class="dado">LIN <span class="destaque">275</span></div>
+  </div>
+
+</div>
+
+<script>
+  // Visualizações por semana
+  new Chart(document.getElementById("graficoVisualizacoes"), {
+    type: 'bar',
+    data: {
+      labels: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
+      datasets: [{
+        label: 'Visualizações',
+        data: [240, 380, 520, 610, 480, 800, 1020],
+        backgroundColor: '#1e90ff'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#aaa' }, grid: { color: '#222' } },
+        y: { ticks: { color: '#aaa' }, grid: { color: '#222' } }
+      }
+    }
+  });
+
+  // Gênero do público
+  new Chart(document.getElementById("graficoGenero"), {
+    type: 'pie',
+    data: {
+      labels: ["Masculino", "Feminino", "Outro"],
+      datasets: [{
+        data: [58, 38, 4],
+        backgroundColor: ['#1e90ff', '#e91e63', '#ff9800']
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          labels: { color: "#ccc" }
+        }
+      }
+    }
+  });
+
+  // Visualizações por país
+  new Chart(document.getElementById("graficoPaises"), {
+    type: 'bar',
+    data: {
+      labels: ["Brasil", "Angola", "Portugal", "Moçambique", "Outros"],
+      datasets: [{
+        label: 'Visualizações',
+        data: [4500, 2900, 1800, 800, 1000],
+        backgroundColor: '#4a00e0'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#aaa' }, grid: { color: '#222' } },
+        y: { ticks: { color: '#aaa' }, grid: { color: '#222' } }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Conteúdos com Música</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    .header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: #111;
+      z-index: 10;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #333;
+    }
+
+    .header img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 20px;
+      border: 4px solid #1e90ff;
+    }
+
+    .info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .info h2 {
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+
+    .info span {
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    .btn-usar {
+      position: fixed;
+      top: 120px;
+      right: 20px;
+      background: #1e90ff;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
+      z-index: 15;
+    }
+
+    .dropdown {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: #111;
+      border-top: 2px solid #1e90ff;
+      display: none;
+      flex-direction: column;
+      padding: 20px;
+      z-index: 20;
+      animation: slide-up 0.3s ease;
+    }
+
+    .dropdown.show {
+      display: flex;
+    }
+
+    .dropdown h3 {
+      margin-bottom: 16px;
+      font-size: 16px;
+    }
+
+    .dropdown button {
+      background: #1e90ff;
+      color: white;
+      border: none;
+      padding: 12px;
+      margin: 6px 0;
+      border-radius: 10px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .grid {
+      margin-top: 240px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      grid-auto-rows: 140px;
+      gap: 2px;
+      padding: 0 6px 120px;
+    }
+
+    .item {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .item img, .item video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .item-text {
+      background: #333;
+      color: white;
+      padding: 10px;
+      font-size: 14px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .icon-overlay {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: rgba(0,0,0,0.6);
+      border-radius: 50%;
+      padding: 4px 8px;
+      font-size: 14px;
+      font-weight: bold;
+      color: white;
+    }
+
+    @keyframes slide-up {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <i class="material-icons" onclick="voltarParaOrigem()">arrow_back</i>
+    <img id="capa" src="" alt="Capa Música">
+    <div class="info">
+      <h2 id="titulo">Nome da Música</h2>
+      <span id="artista">Artista</span>
+    </div>
+  </div>
+
+  <button class="btn-usar" onclick="abrirDropdown()">Usar esta música</button>
+
+  <div class="dropdown" id="dropdown">
+    <h3>Usar esta música em:</h3>
+    <button onclick="irPara('textopublicar.html')">
+      <i class="material-icons">edit</i> Texto
+    </button>
+    <button onclick="irPara('foto1.html')">
+      <i class="material-icons">photo</i> Foto
+    </button>
+    <button onclick="irPara('video.html')">
+      <i class="material-icons">videocam</i> Vídeo
+    </button>
+    <button onclick="irPara('story.html')">
+      <i class="material-icons">auto_awesome</i> Story
+    </button>
+  </div>
+
+  <div class="grid" id="conteudos"></div>
+
+  <script>
+    const capa = sessionStorage.getItem("capaMusica") || "https://via.placeholder.com/300x300";
+    const audio = sessionStorage.getItem("audioMusica") || "";
+    const info = JSON.parse(sessionStorage.getItem("musicaSelecionada") || "{}");
+
+    document.getElementById("capa").src = capa;
+    document.getElementById("titulo").innerText = info.nome || "Nome da Música";
+    document.getElementById("artista").innerText = info.artista || "Artista";
+
+    const dropdown = document.getElementById("dropdown");
+
+    function abrirDropdown() {
+      dropdown.classList.toggle("show");
+    }
+
+    function irPara(destino) {
+      if (capa && audio) {
+        sessionStorage.setItem("capaMusica", capa);
+        sessionStorage.setItem("audioMusica", audio);
+        sessionStorage.setItem("musicaSelecionada", JSON.stringify(info));
+      }
+      window.location.href = destino;
+    }
+
+    function voltarParaOrigem() {
+      const origem = sessionStorage.getItem("origemMusica");
+      if (origem === "reall") {
+        window.location.href = "reall.html";
+      } else {
+        window.location.href = "feed.html";
+      }
+    }
+
+    // Fecha dropdown ao clicar fora
+    document.addEventListener("click", function(event) {
+      if (!dropdown.contains(event.target) && !event.target.closest(".btn-usar")) {
+        dropdown.classList.remove("show");
+      }
+    });
+
+    // Conteúdos simulados
+    const grid = document.getElementById("conteudos");
+    for (let i = 0; i < 15; i++) {
+      const tipo = Math.floor(Math.random() * 3);
+      const div = document.createElement("div");
+      div.className = "item";
+
+      if (tipo === 0) {
+        div.innerHTML = `<img src="https://source.unsplash.com/300x300/?nature&sig=${i}" />
+          <div class="icon-overlay"><i class="material-icons">image</i></div>`;
+      } else if (tipo === 1) {
+        div.innerHTML = `<video src="https://www.w3schools.com/html/mov_bbb.mp4" autoplay muted loop></video>
+          <div class="icon-overlay"><i class="material-icons">play_circle</i></div>`;
+      } else {
+        div.innerHTML = `<div class="item-text" style="background:hsl(${i*30},60%,30%)">Texto #${i+1}</div>
+          <div class="icon-overlay">Tt</div>`;
+      }
+
+      grid.appendChild(div);
+    }
+  </script>
+
+</body>
+</html>

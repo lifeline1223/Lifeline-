@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Conta</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: #111;
+      border-bottom: 1px solid #222;
+    }
+
+    header h1 {
+      font-size: 18px;
+    }
+
+    .material-icons {
+      cursor: pointer;
+      color: #1e90ff;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .cartao {
+      background: linear-gradient(135deg, #1e90ff, #4a00e0);
+      padding: 30px 20px;
+      border-radius: 20px;
+      color: #fff;
+      margin-bottom: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cartao h2 {
+      font-size: 18px;
+      margin-bottom: 12px;
+      opacity: 0.9;
+    }
+
+    .cartao .valor {
+      font-size: 32px;
+      font-weight: bold;
+    }
+
+    .cartao .lin {
+      margin-top: 14px;
+      font-size: 16px;
+      opacity: 0.95;
+    }
+
+    .acoes {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .acao {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      padding: 14px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+
+    .acao:hover {
+      background: #222;
+    }
+
+    .acao i {
+      color: #1e90ff;
+      margin-right: 10px;
+    }
+
+    .acao span {
+      flex: 1;
+      font-size: 14px;
+    }
+
+    .seta {
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div onclick="history.back()"><i class="material-icons">arrow_back</i></div>
+  <h1>Conta</h1>
+  <div></div>
+</header>
+
+<div class="container">
+
+  <!-- Cartão com saldo -->
+  <div class="cartao">
+    <h2>Saldo disponível</h2>
+    <div class="valor" id="saldoEuro">€0,00</div>
+    <div class="lin" id="saldoLin">LIN: 0</div>
+  </div>
+
+  <!-- Ações -->
+  <div class="acoes">
+
+    <div class="acao" onclick="sacarDinheiro()">
+      <i class="material-icons">account_balance_wallet</i>
+      <span>Sacar Dinheiro</span>
+      <i class="material-icons seta">chevron_right</i>
+    </div>
+
+    <div class="acao" onclick="comprarMoeda()">
+      <i class="material-icons">shopping_cart</i>
+      <span>Comprar Moeda Virtual</span>
+      <i class="material-icons seta">chevron_right</i>
+    </div>
+
+    <div class="acao" onclick="converterMoeda()">
+      <i class="material-icons">redeem</i>
+      <span>Converter Moeda em Presente</span>
+      <i class="material-icons seta">chevron_right</i>
+    </div>
+
+    <div class="acao" onclick="abrirHistorico()">
+      <i class="material-icons">history</i>
+      <span>Ver Histórico de Transações</span>
+      <i class="material-icons seta">chevron_right</i>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  function sacarDinheiro() {
+    window.location.href = "sacar.html";
+  }
+
+  function comprarMoeda() {
+    window.location.href = "comprar_moeda.html";
+  }
+
+  function converterMoeda() {
+    window.location.href = "converter_presente.html";
+  }
+
+  function abrirHistorico() {
+    window.location.href = "historico_conta.html";
+  }
+
+  function atualizarSaldo() {
+    const euro = parseFloat(localStorage.getItem("saldoEuro") || "0");
+    const lin = parseInt(localStorage.getItem("saldoLin") || "0");
+
+    document.getElementById("saldoEuro").innerText = "€" + euro.toFixed(2).replace('.', ',');
+    document.getElementById("saldoLin").innerText = "LIN: " + lin;
+  }
+
+  atualizarSaldo();
+</script>
+
+</body>
+</html>

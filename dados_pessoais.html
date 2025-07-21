@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Dados Pessoais</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+    header {
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid #222;
+    }
+    header h1 {
+      font-size: 18px;
+    }
+    .material-icons {
+      cursor: pointer;
+    }
+    .container {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .item {
+      background: #111;
+      border: 1px solid #333;
+      padding: 16px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .item-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .item-info span:first-child {
+      font-size: 13px;
+      color: #999;
+    }
+    .item-info span:last-child {
+      font-size: 15px;
+      color: #fff;
+      margin-top: 3px;
+    }
+    .alterar-btn {
+      color: #1e90ff;
+      font-size: 14px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div onclick="history.back()"><i class="material-icons">arrow_back</i></div>
+  <h1>Dados Pessoais</h1>
+  <div></div>
+</header>
+
+<div class="container">
+
+  <div class="item">
+    <div class="item-info">
+      <span>Nome completo</span>
+      <span id="nomeCompleto">---</span>
+    </div>
+    <button class="alterar-btn" onclick="location.href='editar_perfil.html'">Alterar</button>
+  </div>
+
+  <div class="item">
+    <div class="item-info">
+      <span>Número de telefone</span>
+      <span id="telefoneAtual">---</span>
+    </div>
+    <button class="alterar-btn" onclick="location.href='editar_perfil.html'">Alterar</button>
+  </div>
+
+  <div class="item">
+    <div class="item-info">
+      <span>Data de nascimento</span>
+      <span id="dataNascimento">Indisponível</span>
+    </div>
+    <button class="alterar-btn" onclick="alert('Função em desenvolvimento')">Editar</button>
+  </div>
+
+  <div class="item">
+    <div class="item-info">
+      <span>Gênero</span>
+      <span id="genero">Indisponível</span>
+    </div>
+    <button class="alterar-btn" onclick="alert('Função em desenvolvimento')">Editar</button>
+  </div>
+
+</div>
+
+<script>
+  // Pegar dados do perfil do localStorage
+  const dados = JSON.parse(localStorage.getItem("perfil_usuario") || "{}");
+
+  document.getElementById("nomeCompleto").innerText = dados.nome || "Sem nome";
+  document.getElementById("telefoneAtual").innerText = dados.telefone || "Não definido";
+
+  // Quando for implementado nascimento e gênero, pega também aqui
+</script>
+
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Resgatar Presentes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * {margin: 0; padding: 0; box-sizing: border-box;}
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: #111;
+      border-bottom: 1px solid #222;
+    }
+
+    header h1 {
+      font-size: 18px;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .resumo, .formulario {
+      background: #111;
+      border: 1px solid #333;
+      padding: 16px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .resumo p {
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    label {
+      font-size: 13px;
+      display: block;
+      margin-bottom: 6px;
+      color: #ccc;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: #222;
+      color: #fff;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border-radius: 8px;
+      background: #1e90ff;
+      color: #fff;
+      border: none;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #007bff;
+    }
+
+    .material-icons {
+      cursor: pointer;
+    }
+
+    .notificacao {
+      font-size: 13px;
+      color: #1e90ff;
+      margin-top: -10px;
+      margin-bottom: 10px;
+    }
+
+    .mensagem {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+      color: #4caf50;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div onclick="history.back()"><i class="material-icons">arrow_back</i></div>
+  <h1>Resgatar Presentes</h1>
+  <div></div>
+</header>
+
+<div class="container">
+
+  <div class="resumo">
+    <p><strong>Total de Presentes Recebidos:</strong> <span id="totalPresentes">0</span></p>
+    <p><strong>1 Presente:</strong> €0.20 ou 10 LIN</p>
+  </div>
+
+  <div class="formulario">
+    <label for="quantidade">Quantidade de Presentes para converter:</label>
+    <input type="number" id="quantidade" min="1" placeholder="Ex: 5">
+
+    <label for="tipoConversao">Converter para:</label>
+    <select id="tipoConversao">
+      <option value="lin">LIN (Moeda Virtual)</option>
+      <option value="euro">Euro (€)</option>
+    </select>
+
+    <button onclick="resgatar()">Confirmar Resgate</button>
+  </div>
+
+  <div class="mensagem" id="mensagemFinal"></div>
+
+</div>
+
+<script>
+  const VALOR_EURO = 0.20;
+  const VALOR_LIN = 10;
+
+  // Simular presentes armazenados
+  let recebidos = JSON.parse(localStorage.getItem("presentesRecebidos") || "[]");
+  const total = recebidos.reduce((soma, p) => soma + (parseInt(p.quantidade) || 0), 0);
+  document.getElementById("totalPresentes").innerText = total;
+
+  function resgatar() {
+    const qtd = parseInt(document.getElementById("quantidade").value);
+    const tipo = document.getElementById("tipoConversao").value;
+    const mensagemEl = document.getElementById("mensagemFinal");
+
+    if (isNaN(qtd) || qtd <= 0) {
+      mensagemEl.innerText = "Digite uma quantidade válida de presentes.";
+      return;
+    }
+
+    if (qtd > total) {
+      mensagemEl.innerText = `Você só tem ${total} presentes disponíveis.`;
+      return;
+    }
+
+    if (tipo === "euro") {
+      const valor = qtd * VALOR_EURO;
+      let saldo = parseFloat(localStorage.getItem("saldoEuro") || "0");
+      saldo += valor;
+      localStorage.setItem("saldoEuro", saldo.toFixed(2));
+    } else {
+      const valor = qtd * VALOR_LIN;
+      let saldo = parseInt(localStorage.getItem("saldoLin") || "0");
+      saldo += valor;
+      localStorage.setItem("saldoLin", saldo);
+    }
+
+    // Atualiza lista de presentes recebidos (subtrai os convertidos)
+    let restantes = [];
+    let falta = qtd;
+    for (let p of recebidos) {
+      const num = parseInt(p.quantidade);
+      if (num <= falta) {
+        falta -= num;
+      } else {
+        restantes.push({ ...p, quantidade: num - falta });
+        falta = 0;
+      }
+      if (falta <= 0) break;
+    }
+    localStorage.setItem("presentesRecebidos", JSON.stringify(restantes));
+
+    mensagemEl.innerText = "Resgate realizado com sucesso!";
+    setTimeout(() => {
+      window.location.href = "conta.html";
+    }, 1500);
+  }
+</script>
+
+</body>
+</html>

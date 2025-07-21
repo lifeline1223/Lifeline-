@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Perfil do Usuário</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    :root {
+      --cor-principal: #1e90ff;
+      --cor-selo: #fdd835;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: #111;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      border-bottom: 1px solid #222;
+    }
+
+    header h1 {
+      font-size: 18px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .material-icons { cursor: pointer; }
+
+    .content {
+      padding-top: 70px;
+      overflow-y: auto;
+      height: calc(100vh - 70px);
+    }
+
+    .profile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 10px 10px;
+    }
+
+    .profile img {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 3px solid var(--cor-principal);
+      margin-bottom: 10px;
+    }
+
+    .profile h2 {
+      font-size: 18px;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .badge-lifeline {
+      display: inline-flex;
+      background: var(--cor-selo);
+      color: #000;
+      border-radius: 50%;
+      font-size: 13px;
+      width: 20px;
+      height: 20px;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .profile p {
+      font-size: 14px;
+      color: #ccc;
+      text-align: center;
+      padding: 0 10px;
+    }
+
+    .follow-info {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin: 15px 0;
+    }
+
+    .follow-info span {
+      cursor: pointer;
+      color: var(--cor-principal);
+    }
+
+    .categories {
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      background: #111;
+      border-top: 1px solid #222;
+      border-bottom: 1px solid #222;
+    }
+
+    .categories span {
+      font-size: 16px;
+      color: var(--cor-principal);
+      cursor: pointer;
+      padding: 4px 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      padding: 5px;
+    }
+
+    .grid img, .grid video, .grid .text {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      background: #222;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .views {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      font-size: 11px;
+      background: rgba(0,0,0,0.6);
+      padding: 2px 6px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+    }
+
+    .views i {
+      font-size: 13px;
+      margin-right: 2px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div onclick="history.back()"><i class="material-icons">arrow_back</i></div>
+  <div onclick="window.location.href='definicao.html'"><i class="material-icons">more_vert</i></div>
+</header>
+
+<div class="content">
+  <div class="profile">
+    <img id="fotoPerfil" src="perfil1.jpg" alt="Foto de perfil">
+    <h2 id="nomePerfil">
+      Usuário
+      <span id="badgeProfile" class="badge-lifeline" style="display:none;">✓</span>
+    </h2>
+    <p id="bioPerfil">Carregando...</p>
+  </div>
+
+  <div class="follow-info">
+    <span onclick="location.href='seguir.html'">1.2k Seguidores</span>
+    <span onclick="location.href='seguir.html'">200 Seguindo</span>
+  </div>
+
+  <div class="categories">
+    <span onclick="filtrar('todos')">Todos</span>
+    <span onclick="filtrar('guardado')">Guardados</span>
+  </div>
+
+  <div class="grid" id="conteudos"></div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    databaseURL: "https://lifeline-78bce-default-rtdb.firebaseio.com/"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+</script>
+
+<script>
+  const conteudos = document.getElementById("conteudos");
+  const todos = [
+    { tipo: 'video', src: 'video1.mp4', views: 1200 },
+    { tipo: 'foto', src: 'foto1.jpg' },
+    { tipo: 'texto', texto: 'Olá mundo!' },
+    { tipo: 'foto', src: 'foto2.jpg', guardado: true },
+    { tipo: 'texto', texto: 'Conteúdo salvo', guardado: true }
+  ];
+
+  function filtrar(tipo) {
+    conteudos.innerHTML = "";
+
+    const filtrados = tipo === 'guardado'
+      ? todos.filter(c => c.guardado)
+      : todos;
+
+    filtrados.forEach(c => {
+      let el;
+
+      if (c.tipo === 'video') {
+        el = document.createElement('video');
+        el.src = c.src;
+        el.muted = true;
+        el.autoplay = true;
+        el.loop = true;
+        el.onclick = () => location.href = 'telacheia.html';
+
+        const v = document.createElement("div");
+        v.className = "views";
+        v.innerHTML = `<i class="material-icons">visibility</i> ${c.views || 0}`;
+        el.appendChild(v);
+
+      } else if (c.tipo === 'foto') {
+        el = document.createElement('img');
+        el.src = c.src;
+        el.onclick = () => location.href = 'telacheia.html';
+
+      } else if (c.tipo === 'texto') {
+        el = document.createElement('div');
+        el.className = 'text';
+        el.innerText = c.texto;
+        el.style.display = 'flex';
+        el.style.alignItems = 'center';
+        el.style.justifyContent = 'center';
+        el.style.fontSize = '14px';
+        el.style.background = '#222';
+        el.onclick = () => location.href = 'telacheia.html';
+      }
+
+      conteudos.appendChild(el);
+    });
+  }
+
+  // Exibe todos por padrão
+  filtrar('todos');
+
+  // Carrega dados do usuário local
+  const usuario = JSON.parse(localStorage.getItem("kuntaCadastroCompleto") || "{}");
+
+  if (usuario.telefone) {
+    firebase.database().ref("usuarios/" + usuario.telefone).once("value").then(snapshot => {
+      const dados = snapshot.val();
+      if (dados) {
+        document.getElementById("fotoPerfil").src = dados.foto || "perfil1.jpg";
+        document.getElementById("nomePerfil").innerText = dados.nome || "Usuário";
+        document.getElementById("bioPerfil").innerText = dados.bio || "Sem biografia.";
+      }
+    });
+  } else {
+    alert("Usuário não logado.");
+  }
+
+  const status = JSON.parse(localStorage.getItem("verificacaoAvancadaLifeline") || "{}");
+  if (status.status === "Aprovado") {
+    document.getElementById("badgeProfile").style.display = "inline-flex";
+  }
+</script>
+
+</body>
+</html>

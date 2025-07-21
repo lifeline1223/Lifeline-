@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Definições da Conta</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #000;
+      --fg: #fff;
+      --btn: #111;
+      --hover: #222;
+      --borda: #333;
+      --accent: #1e90ff;
+    }
+
+    body.claro {
+      --bg: #fff;
+      --fg: #000;
+      --btn: #f0f0f0;
+      --hover: #e0e0e0;
+      --borda: #ccc;
+      --accent: #1e90ff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: Arial, sans-serif;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--btn);
+      border-bottom: 1px solid var(--borda);
+    }
+
+    header h1 {
+      font-size: 18px;
+    }
+
+    .material-icons {
+      cursor: pointer;
+    }
+
+    .container {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .user-info img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 3px solid var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .user-info h2 {
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+
+    .user-info p {
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    .setting-btn {
+      background: var(--btn);
+      border: 1px solid var(--borda);
+      color: var(--fg);
+      padding: 14px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .setting-btn:hover {
+      background: var(--hover);
+    }
+
+    .setting-btn i {
+      font-size: 20px;
+      color: var(--accent);
+    }
+
+    .logout-btn {
+      margin-top: 40px;
+      background: #1e1e1e;
+      border: 1px solid #444;
+      color: #f44336;
+    }
+
+    .logout-btn:hover {
+      background: #2a2a2a;
+    }
+
+    .switch {
+      margin-left: auto;
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input {
+      display: none;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #888;
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--accent);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div onclick="window.location.href='perfil.html'"><i class="material-icons">arrow_back</i></div>
+  <h1>Definições</h1>
+  <div></div>
+</header>
+
+<div class="container">
+  <div class="user-info">
+    <img id="fotoUsuario" src="perfil1.jpg" alt="Foto de perfil">
+    <h2 id="nomeUsuario">Usuário</h2>
+    <p id="telefoneUsuario">@telefone</p>
+  </div>
+
+  <div class="setting-btn" onclick="editarPerfil()">
+    <i class="material-icons">edit</i> Editar Perfil
+  </div>
+
+  <div class="setting-btn" onclick="dadosPessoais()">
+    <i class="material-icons">person</i> Dados Pessoais
+  </div>
+
+  <div class="setting-btn" onclick="subscricao()">
+    <i class="material-icons">paid</i> Subscrição
+  </div>
+
+  <div class="setting-btn" onclick="anuncio()">
+    <i class="material-icons">campaign</i> Anúncio
+  </div>
+
+  <div class="setting-btn" onclick="idioma()">
+    <i class="material-icons">language</i> Idioma
+  </div>
+
+  <div class="setting-btn" onclick="conta()">
+    <i class="material-icons">account_circle</i> Conta
+  </div>
+
+  <div class="setting-btn" onclick="verGuardados()">
+    <i class="material-icons">bookmark</i> Guardados
+  </div>
+
+  <div class="setting-btn" onclick="abrirNotificacoes()">
+    <i class="material-icons">notifications</i> Estatísticas
+  </div>
+
+  <div class="setting-btn" onclick="privacidade()">
+    <i class="material-icons">security</i> Privacidade
+  </div>
+
+  <div class="setting-btn" onclick="ajuda()">
+    <i class="material-icons">help_outline</i> Ajuda
+  </div>
+
+  <div class="setting-btn" onclick="regras()">
+    <i class="material-icons">gavel</i> Leis e Regras
+  </div>
+
+  <!-- Botão de modo claro/escuro -->
+  <div class="setting-btn" id="modoToggle">
+    <i class="material-icons">dark_mode</i>
+    Modo Escuro / Claro
+    <label class="switch">
+      <input type="checkbox" id="temaCheckbox">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="setting-btn logout-btn" onclick="sairConta()">
+    <i class="material-icons">exit_to_app</i> Terminar Sessão
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+<script>
+  // Firebase Init
+  const firebaseConfig = {
+    databaseURL: "https://lifeline-78bce-default-rtdb.firebaseio.com/"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  const user = JSON.parse(localStorage.getItem("perfil_usuario") || "{}");
+  const tel = user.telefone || "anon";
+
+  // Preencher dados do usuário
+  document.getElementById("nomeUsuario").innerText = user.nome || "Usuário";
+  document.getElementById("telefoneUsuario").innerText = "@" + (user.telefone || "sem_telefone");
+  document.getElementById("fotoUsuario").src = user.foto || "perfil1.jpg";
+
+  // Aplicar tema salvo
+  db.ref("config/" + tel + "/tema").on("value", snap => {
+    const tema = snap.val() || "escuro";
+    const body = document.body;
+    const checkbox = document.getElementById("temaCheckbox");
+
+    if (tema === "claro") {
+      body.classList.add("claro");
+      checkbox.checked = true;
+    } else {
+      body.classList.remove("claro");
+      checkbox.checked = false;
+    }
+
+    localStorage.setItem("temaLifeline", tema);
+  });
+
+  // Trocar tema
+  document.getElementById("temaCheckbox").addEventListener("change", (e) => {
+    const novoTema = e.target.checked ? "claro" : "escuro";
+    db.ref("config/" + tel).update({ tema: novoTema });
+  });
+
+  // Funções de navegação
+  function editarPerfil() { window.location.href = "editar_perfil.html"; }
+  function dadosPessoais() { window.location.href = "dados_pessoais.html"; }
+  function subscricao() { window.location.href = "subscricao.html"; }
+  function anuncio() { window.location.href = "anuncio.html"; }
+  function idioma() { window.location.href = "idioma.html"; }
+  function conta() { window.location.href = "conta.html"; }
+  function verGuardados() { window.location.href = "guardados.html"; }
+  function abrirNotificacoes() { window.location.href = "estatisticas.html"; }
+  function privacidade() { window.location.href = "privacidade.html"; }
+  function ajuda() { window.location.href = "contato.html"; }
+  function regras() { window.location.href = "regras.html"; }
+
+  function sairConta() {
+    if (confirm("Deseja terminar a sessão?")) {
+      localStorage.clear();
+      window.location.href = "teste.html";
+    }
+  }
+</script>
+
+</body>
+</html>
